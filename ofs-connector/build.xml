@@ -1,0 +1,87 @@
+<?xml version="1.0"?>
+<project name="ofs-connector" default="build" basedir=".">
+
+	<!-- ====================================================== -->
+	<!-- set build properties -->
+	<!-- ====================================================== -->
+	<property environment="env" />
+	<property file="build.properties" />
+	<property file="${build.dependencies.dir}/common.build.properties" />
+	
+	<property name="src.dir" value="src" />
+	<property name="src.b.dir" value="${src.dir}/main/b" />
+	<property name="lib.dir" value="lib" />
+	<property name="dependencies.dir" value="../dependencies" />
+	<property name="build.dir" value="build" />
+	<property name="src.generated.dir" value="${src.dir}/generated" />
+	<property name="src.generated.jbcapi.dir" value="${src.generated.dir}/t24service/JBCAPI" />
+	<property name="src.generated.jbcinsert.dir" value="${src.generated.dir}/t24service/JBCInsert" />
+
+	<!-- TAFJ Specific Path -->
+	<property name="tafj.dir" value="${env.TAFJ_HOME}" />
+	<property name="tafj.lib.dir" value="${tafj.dir}/lib" />
+	<property name="tafj.conf.file" value="${env.TAFJ_HOME}/conf/tafj.properties" />
+	
+	<!-- Where do we get our libraries from? -->
+	<path id="javac.classpath">
+		<fileset dir="${env.JAVA_HOME}/lib">
+			<include name="**${file.separator}tools.jar" />
+		</fileset>
+	</path>
+	<path id="generate.classpath">
+		<fileset dir="${lib.dir}" includes="apiGen.jar" />
+	</path>
+	<path id="tcompiler.classpath">
+		<fileset dir="${tafj.lib.dir}" includes="**/*.jar" />
+		<path refid="javac.classpath" />
+	</path>
+
+	<target name="init">
+		<mkdir dir="${build.dir}" />
+	</target>
+
+	<target name="clean">
+        <delete dir="${build.dir}" />
+    </target>
+
+	<target name="build" depends="run-apiGen,compile" />
+	
+	<target name="run-apiGen" depends="init" description="run apiGen to generate source code for T24 service">
+		<property name="component.uml.file.path" value="${src.dir}/main/uml/${component.name}.xml" />
+		<java classname="com.temenos.t24.model.generator.T24ApiGenerator" fork="yes" failonerror="true" classpathref="generate.classpath">
+			<arg value="${component.uml.file.path}" />
+			<arg value="${src.generated.dir}" />
+			<arg value="T24ServiceGen" />
+			<arg value="ServiceProvider" />
+
+			<sysproperty key="COMP_MAJOR_VERSION" value="${major.project.version}"/>
+			<sysproperty key="COMP_MINOR_VERSION" value="${minor.project.version}"/>
+		</java>
+	</target>
+
+	<target name="compile">
+        <antcall target="compile.tafj">
+            <param name="comp.temp.src.dir" value="${src.generated.jbcapi.dir}" />
+        </antcall>
+        <antcall target="compile.tafj">
+        	<param name="comp.temp.src.dir" value="${src.b.dir}" />
+        </antcall>
+	</target>
+	
+	<target name="compile.tafj">
+		<echo message="Do TAFJ compile" />
+        <java classname="com.temenos.tafj.compiler.tcompile" dir="${basedir}" fork="yes" failonerror="true">
+            <sysproperty key="temn.tafj.directory.java" value="${build.dir}/tafjjava" />
+            <sysproperty key="temn.tafj.directory.classes" value="${build.dir}/tafjclasses" />
+            <sysproperty key="temn.tafj.directory.insert" value="${src.generated.jbcinsert.dir};${src.generated.jbcapi.dir}" />
+            <!-- all our dependent subroutines -->
+            <sysproperty key="temn.tafj.directory.precompile" value="${lib.dir}/tComponentFramework.jar" />
+            <sysproperty key="temn.tafj.compiler.no.dependency" value="false" />
+            <sysproperty key="temn.tafj.compiler.keep.java" value="true" />
+            <sysproperty key="temn.tafj.compiler.insert.name.any" value="false" />
+            <arg line="-cf ${tafj.conf.file} ${comp.temp.src.dir}/*.b" />
+            <classpath refid="tcompiler.classpath" />
+        </java>
+	</target>
+	
+</project>

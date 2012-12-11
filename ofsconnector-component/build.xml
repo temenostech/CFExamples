@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<project name="OFSConnector" xmlns:ivy="antlib:fr.jayasoft.ivy.ant" basedir=".">
+
+	<!-- ====================================================== -->
+	<!-- set build properties -->
+	<!-- ====================================================== -->
+	<property environment="env" />
+	<condition property="build.dependencies.dir" 
+				value="${basedir}/../T24BuildDependencies" 
+				else="${basedir}/../../../../T24BuildDependencies">
+		<available file="${basedir}/../T24BuildDependencies" type="dir" />
+	</condition>
+	<property file="build.properties" />
+	<property file="${build.dependencies.dir}/common.build.properties" />
+	
+	<!-- Import T24 Generic Build -->
+	<import file="${build.dependencies.dir}/resources/t24ivy/xbuild.xml" />
+		
+	<target name="release" depends="T24Enterprise.dist" />
+	<target name="build" depends="T24Enterprise.dist" />
+	<target name="test" depends="T24Enterprise.test" />
+	<target name="clean" depends="T24Enterprise.clean" />
+
+</project>

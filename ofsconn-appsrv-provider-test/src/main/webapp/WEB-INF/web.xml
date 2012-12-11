@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+                         "http://java.sun.com/dtd/web-app_2_3.dtd">
+<web-app>
+	 <display-name>Archetype Created Web Application</display-name>
+	 <servlet>
+	  <servlet-name>Foo</servlet-name>
+	  <servlet-class>com.sandbox.tafjeemix.war.FooServlet</servlet-class>
+	 </servlet>
+	 <servlet-mapping>
+	  <servlet-name>Foo</servlet-name>
+	  <url-pattern>/foo</url-pattern>
+	 </servlet-mapping>
+	 
+	 <!-- for T24 purpose -->
+	<resource-ref id="ResourceRef_OFSt24Datasource">
+		<description>Used to get connections from T24 jdbc pool
+		</description>
+		<res-ref-name>jdbc/t24DataSource</res-ref-name>
+		<res-type>javax.sql.DataSource</res-type>
+		<res-auth>Container</res-auth>
+	</resource-ref>
+
+	<resource-ref id="ResourceRef_OFSt24LockingDatasource">
+		<description>Used to get connections from T24 jdbc pool
+		</description>
+		<res-ref-name>jdbc/t24LockingDataSource</res-ref-name>
+		<res-type>javax.sql.DataSource</res-type>
+		<res-auth>Container</res-auth>
+	</resource-ref>
+	 
+	 
+</web-app>

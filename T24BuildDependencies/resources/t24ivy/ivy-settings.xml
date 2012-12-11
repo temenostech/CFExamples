@@ -1,0 +1,58 @@
+<ivysettings>
+    <properties file="${ivy.settings.dir}/ivysettings-file.properties" />
+    <settings defaultResolver="main" />
+	<caches 
+		defaultCacheDir="${ivy.default.ivy.user.dir}/cache"
+		artifactPattern="[organisation]/[branch]/[module]/[type]s/([platform]/)[artifact]-[revision](.[ext])" 
+		ivyPattern="[organisation]/[branch]/[module]/ivy(-[platform])-[revision].xml" />  
+
+    <property name="ivy.pattern" value="ivys/[organisation]/[branch]/[module](-[platform])-[revision].xml" />
+	<property name="repository.pattern" value="[organisation]/[module]/([platform]/)[artifact]-[revision](.[ext])" />
+	<property name="temenos.artifact.pattern" value="[organisation]/[branch]/[module]/([platform]/)[artifact]-[revision](-[type])(.[ext])" />
+	<property name="java.publisher.dir" value="${ivy.default.ivy.user.dir}/publish" override="false" />
+	<property name="p4.publisher.dir" value="${user.home}/.p4ivy/repository/internal" override="false"/>
+	<property name="shared.repository.home" value="repository.temenosgroup.com" override="false" />
+	
+	<!-- Disable sha1,md5 checks on downloads files, not working properly -->
+	<property name="ivy.checksums" value="" />
+
+	<!-- Make sure new versions of development releases are always downloaded -->
+	<property name="changing.pattern" value="*-dev" />
+ 
+	<!-- Ensure that the resolvers check for modified ivy.xml files -->
+	<property name="ivy.resolver.default.check.modified" value="true"/>
+	
+	<resolvers>
+		<!-- Resolve 3rd party libraries from local filesystem resolver (copies placed in Perforce) -->
+		<filesystem name="external-local-resolver">
+			<artifact pattern="${local.ivy.repository.dir}/external/${repository.pattern}"/>
+		</filesystem>
+		
+		<!-- Download 3rd party libraries from shared network repository -->
+		<url name="external-http-resolver">
+			<artifact pattern="http://repository.temenosgroup.com/external/${repository.pattern}" />
+		</url>
+
+		<!-- Download Temenos projects from shared network Ivy repository -->
+		<ivyrep name="temenos-http-resolver" ivyroot="http://${shared.repository.home}/ivyrep/" ivypattern="${ivy.pattern}" artroot="http://${shared.repository.home}/ivyrep/" artpattern="${temenos.artifact.pattern}" changingPattern="${changing.pattern}" changingMatcher="glob" />
+
+		<!-- Publish/Resolve jBASE projects to/from the file system -->
+		<filesystem name="publisher" checkmodified="true" changingPattern="${changing.pattern}" changingMatcher="glob">
+			<artifact pattern="${java.publisher.dir}/${temenos.artifact.pattern}" />
+			<ivy pattern="${java.publisher.dir}/${ivy.pattern}" />
+		</filesystem>
+
+		<!-- Publish/Resolve jBASE projects to/from perforce -->
+		<filesystem name="p4publisher" changingPattern="${changing.pattern}" changingMatcher="glob">
+			<artifact pattern="${p4.publisher.dir}/${temenos.artifact.pattern}" />		
+			<ivy pattern="${p4.publisher.dir}/${ivy.pattern}" />
+		</filesystem>
+		
+		<chain name="main" returnFirst="true">
+			<resolver ref="publisher" />
+			<resolver ref="external-local-resolver"/>
+			<resolver ref="temenos-http-resolver"/>
+			<resolver ref="external-http-resolver"/>
+		</chain>
+	</resolvers>
+</ivysettings>

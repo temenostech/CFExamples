@@ -1,0 +1,79 @@
+<?xml-stylesheet type="text/xsl" href="http://repository.temenosgroup.com/xsl/version-doc.xsl"?>
+<ivy-module version="2.0" xmlns:e="http://ant.apache.org/ivy/extra">
+    <info organisation="TEMENOS" branch="MAIN" module="OFSConnector" />
+    <!-- "war->compile(*)" this means the 'war' configuration depends on the
+        'compile' configuration of the dependency and if the dependency is not
+        found in 'compile' then use the 'default' (same as '*') config (usually that is all dependencies) -->
+    <configurations defaultconfmapping="test->test(*);compile->compile(*);package->package(*);generator->generator(*);axis2->axis2(*);nativeDebug->nativeDebug(*);nativeRelease->nativeRelease(*);compileDLL->compileDLL(*);easyqa->easyqa(*);componentDep->componentDep(*)">
+        <conf name="test" description="Test Time dependencies"/>
+        <conf name="compile" description="Build Time dependencies"/>
+        <conf name="package" description="Distributable dependencies" />
+        <conf name="generator" description="Generator dependencies" />
+        <conf name="axis2" description="Axis2 dependencies" />
+        <conf name="nativeDebug" description="Native debug dependencies" />
+        <conf name="nativeRelease" description="Native release dependencies" />
+        <conf name="compileDLL" description="Build Time DLL Dependencies" />
+		<conf name="easyqa" description="JBC unit testing framework" />
+		<conf name="componentDep" description="Component level dependencies" />
+	</configurations>
+    <publications>
+    	<artifact name="#SERVICE_NAME#" type="" ext="zip" />
+    	<artifact name="#SERVICE_NAME#" type="" ext="zip" e:platform="#PLATFORM_WIN#" />
+    	<artifact name="#SERVICE_NAME#" type="" ext="zip" e:platform="#PLATFORM_UNIX#" />
+    </publications>
+    <dependencies>
+        <dependency org="TEMENOS" branch="MAIN" name="jremote" transitive="false" rev="latest-dev" conf="compile" >
+            <artifact name="jremote" type="" ext="jar" conf="compile" />
+        </dependency>
+        <dependency org="TEMENOS" branch="MAIN" name="jremote(.NET)" rev="latest-dev" conf="compileDLL">
+			<artifact name="jremote" type="" ext="dll" conf="compileDLL" />
+		</dependency>
+        <dependency org="TEMENOS" branch="MAIN" name="TOCF(EE)" transitive="false" rev="latest-dev" conf="compile" >
+            <artifact name="tocfT24ra" type="" ext="jar" conf="compile" />
+        </dependency>
+        <dependency org="TEMENOS" branch="MAIN" name="apiGen" transitive="false" rev="latest-dev" conf="generator" >
+            <artifact name="apiGen" type="" ext="jar" conf="generator" />
+        </dependency>
+        <dependency org="TEMENOS" branch="MAIN" name="EasyQA" transitive="false" rev="latest-dev" conf="easyqa" >
+            <artifact name="EasyQALib" ext="dll" e:platform="#PLATFORM_WIN#" type="" conf="easyqa" />
+            <artifact name="EasyQALib" ext="exp" e:platform="#PLATFORM_WIN#" type="" conf="easyqa" />
+            <artifact name="EasyQALib" ext="lib" e:platform="#PLATFORM_WIN#" type="" conf="easyqa" />
+            <artifact name="EasyQALib" ext="def" e:platform="#PLATFORM_WIN#" type="" conf="easyqa" />
+            <artifact name="runner" ext="exe" e:platform="#PLATFORM_WIN#" type="" conf="easyqa" />
+            <artifact name="EasyQALib" ext="so" e:platform="#PLATFORM_UNIX#" type="" conf="easyqa" />
+            <artifact name="EasyQALib" ext="so.el" e:platform="#PLATFORM_UNIX#" type="" conf="easyqa" />
+            <artifact name="runner" e:platform="#PLATFORM_UNIX#" type="" conf="easyqa" />
+            <artifact name="build" ext="xml" type="" conf="easyqa" />
+            <artifact name="EasyQA" ext="jar" type="" conf="easyqa" />
+            <artifact name="EasyQAAntTasks" ext="jar" type="" conf="easyqa" />
+            <artifact name="MockFrameworkLib" ext="dll" e:platform="#PLATFORM_WIN#" type="" conf="easyqa" />
+            <artifact name="MockFrameworkLib" ext="exp" e:platform="#PLATFORM_WIN#" type="" conf="easyqa" />
+            <artifact name="MockFrameworkLib" ext="lib" e:platform="#PLATFORM_WIN#" type="" conf="easyqa" />
+            <artifact name="MockFrameworkLib" ext="def" e:platform="#PLATFORM_WIN#" type="" conf="easyqa" />
+            <artifact name="MockFrameworkLib" ext="so" e:platform="#PLATFORM_UNIX#" type="" conf="easyqa" />
+            <artifact name="MockFrameworkLib" ext="so.el" e:platform="#PLATFORM_UNIX#" type="" conf="easyqa" />
+        </dependency>
+        
+        <!-- Define Component Level Dependencies Below -->
+        <dependency org="TEMENOS" branch="MAIN" name="Catalog" transitive="false" rev="latest-dev" conf="componentDep" >
+            <artifact name="CatalogService" ext="zip" e:platform="#PLATFORM_WIN#" type="" conf="componentDep" />
+            <artifact name="CatalogService" ext="zip" e:platform="#PLATFORM_UNIX#" type="" conf="componentDep" />
+            <artifact name="CatalogService" ext="zip" type="" conf="componentDep" /> 
+        </dependency>
+        
+        <!-- Define Third Party Libraries Dependencies-->
+        <dependency org="junit" name="junit" rev="4.8.2" conf="compile,test"/>
+        <dependency org="apache" name="axis2" rev="1.5.3" conf="axis2">
+            <artifact name="axis2" type="" ext="zip" conf="axis2" />
+        </dependency>
+        <dependency org="apache" name="wss4j" rev="1.5.10" conf="compile,test" />
+        <dependency org="spring" name="spring" rev="2.5.6" conf="compile" />
+        <dependency org="apache" name="commons-pool" rev="1.5.5" conf="compile" />
+        <dependency org="google" name="gtest" rev="1.5.0" conf="test" >
+            <artifact name="gtest" type="" ext="zip" conf="test" />
+        </dependency>
+        <dependency org="NUnit" name="NUnit" rev="2.6" conf="test">
+      		<artifact name="NUnit" type="" ext="zip" conf="test" />
+    	</dependency>
+    </dependencies>
+</ivy-module>

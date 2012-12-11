@@ -1,13 +1,13 @@
 package com.sandbox.poc;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Test;
+
+import com.temenos.soa.services.RuntimeProperties;
 import com.temenos.soa.services.data.Response;
 import com.temenos.soa.services.data.ResponseDetails;
-import com.temenos.services.ofsconnector.OFSConnectorService;
-import com.temenos.services.ofsconnector.OFSConnectorServiceImpl;
-import com.temenos.services.ofsconnector.data.OFSConnResponse;
-import com.temenos.soa.services.tafj.TAFJSessionProperties;
 
 public class OfsConnectorComponentTest {
 
@@ -29,7 +29,7 @@ public class OfsConnectorComponentTest {
 
 	@Test
 	public void testProcessOfsOnTafjUsingJavaApiForError() {
-		OFSConnectorService service = getService(); 
+		OFSConnectorServiceAPI service = getService(); 
 		String ofsRequest = "FOO,/S/PROCESS,INPUTT/123456,BLAH";
 		OFSConnResponse ofsResponse = new OFSConnResponse();
 		ResponseDetails serviceResponse = new ResponseDetails();
@@ -52,12 +52,9 @@ public class OfsConnectorComponentTest {
 		// TODO
 	}
 	
-	private OFSConnectorService getService(){
-		TAFJSessionProperties properties = new TAFJSessionProperties();
-		properties.addSessionProperty("OFS_SOURCE", "GCS");
-		OFSConnectorServiceImpl service = new OFSConnectorServiceImpl(
-				properties);
-		service.setServiceCallBack(new MockServiceCallback());
+	private OFSConnectorServiceAPI getService(){
+		RuntimeProperties properties = new RuntimeProperties("OFS_SOURCE", "GCS");
+		OFSConnectorServiceAPI service = new OFSConnectorServiceImpl(properties, new MockServiceHandler());
 		return service;
 	}
 

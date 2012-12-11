@@ -17,9 +17,11 @@
 	<property name="src.generated.jbcapi.dir" value="${src.generated.dir}/t24service/JBCAPI" />
 	<property name="src.generated.jbcinsert.dir" value="${src.generated.dir}/t24service/JBCInsert" />
 
-	<!-- TAFJ Specific Path -->
+	<!-- TAFJ and T24 Specific Path -->
+	<property name="t24.home" value="${env.T24_HOME}" />
 	<property name="tafj.dir" value="${env.TAFJ_HOME}" />
 	<property name="tafj.lib.dir" value="${tafj.dir}/lib" />
+	<property name="tafj.ext.dir" value="${tafj.dir}/ext" />
 	<property name="tafj.conf.file" value="${env.TAFJ_HOME}/conf/tafj.properties" />
 	
 	<!-- Where do we get our libraries from? -->
@@ -53,7 +55,6 @@
 			<arg value="${src.generated.dir}" />
 			<arg value="T24ServiceGen" />
 			<arg value="ServiceProvider" />
-
 			<sysproperty key="COMP_MAJOR_VERSION" value="${major.project.version}"/>
 			<sysproperty key="COMP_MINOR_VERSION" value="${minor.project.version}"/>
 		</java>
@@ -73,9 +74,8 @@
         <java classname="com.temenos.tafj.compiler.tcompile" dir="${basedir}" fork="yes" failonerror="true">
             <sysproperty key="temn.tafj.directory.java" value="${build.dir}/tafjjava" />
             <sysproperty key="temn.tafj.directory.classes" value="${build.dir}/tafjclasses" />
-            <sysproperty key="temn.tafj.directory.insert" value="${src.generated.jbcinsert.dir};${src.generated.jbcapi.dir}" />
+            <sysproperty key="temn.tafj.directory.insert" value="${src.generated.jbcinsert.dir};${src.generated.jbcapi.dir};${t24.home}" />
             <!-- all our dependent subroutines -->
-            <sysproperty key="temn.tafj.directory.precompile" value="${lib.dir}/tComponentFramework.jar" />
             <sysproperty key="temn.tafj.compiler.no.dependency" value="false" />
             <sysproperty key="temn.tafj.compiler.keep.java" value="true" />
             <sysproperty key="temn.tafj.compiler.insert.name.any" value="false" />

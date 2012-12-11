@@ -1,0 +1,2580 @@
+<?xml version="1.0"?>
+<!-- ======================================================== -->
+<project name="T24Enterprise" xmlns:ivy="antlib:fr.jayasoft.ivy.ant" basedir=".">
+
+	<!-- ====================================================== -->
+	<!-- set build properties -->
+	<!-- ====================================================== -->
+
+  	<!-- resources dir -->
+	<property name="resources.dir" value="${build.dependencies.dir}${file.separator}resources" />
+    
+	<!-- antcontrib allows us to branch and use foreach -->
+	<taskdef resource="net/sf/antcontrib/antlib.xml" classpath="${build.dependencies.dir}/resources/ant-contrib-1.0b3.jar" />
+	<property file="build.properties" />
+
+	<!-- Import t24ivy -->
+	<property name="t24ivy.dir" location="${basedir}" />
+	<import file="t24ivy.xml" />
+
+	<!-- Maven Home -->
+	<property name="maven.home" value="${build.dependencies.dir}${file.separator}apache-maven-3.0.4" />
+	<path id="maven.settings.file.path">
+		<fileset dir="${resources.dir}" includes="settings.xml" />
+	</path>
+  
+	<property name="debuglevel" value="lines,vars,source" />
+	<!-- Web Service needs full debug level in order for WSDL to include proper parameter names -->
+	<property name="debuglevel-web" value="lines,vars,source" />
+
+	<!-- allow access to environment variables -->
+	<property environment="env" />
+
+	<!--relative directory structure-->
+	<property name="src.dir" value="${basedir}${file.separator}src" />
+	<property name="test.dir" value="${src.dir}${file.separator}test" />
+	<property name="build.dir" value="${basedir}${file.separator}build" />
+	<property name="build.ext.lib.dir" value="${build.dir}${file.separator}extlib" />
+	<property name="testbuild.dir" value="${basedir}${file.separator}testbuild" />
+	<property name="dist.dir" value="${basedir}${file.separator}dist" />
+	<property name="dist.include.dir" value="${dist.dir}${file.separator}include" />
+	<property name="dist.lib.dir" value="${dist.dir}${file.separator}lib" />
+	<property name="dist.JBC.insert.dir" value="${dist.dir}${file.separator}JBCInsert" />
+	<property name="dist.t24.data.item.dir" value="${dist.dir}${file.separator}Data" />
+
+	<!-- t24 service source, build and dist directory structure-->
+	<property name="src.generated.dir" value="${src.dir}${file.separator}generated" />
+	<property name="src.t24service.dir" value="${src.generated.dir}${file.separator}t24service" />
+	<property name="src.JBC.API.dir" value="${src.t24service.dir}${file.separator}JBCAPI" />
+	<property name="src.JBC.Impl.dir" value="${src.t24service.dir}${file.separator}JBCImpl" />
+	<property name="src.JBC.Insert.dir" value="${src.t24service.dir}${file.separator}JBCInsert" />
+	<property name="src.t24.data.item.dir" value="${src.dir}${file.separator}main${file.separator}Data" />
+	<property name="src.customized.JBC.Impl.dir" value="${src.dir}${file.separator}main${file.separator}b" />
+	<property name="src.cpp.API.dir" value="${src.t24service.dir}${file.separator}cppAPI" />
+	<property name="src.dot.net.API.dir" value="${src.t24service.dir}${file.separator}dotnetAPI" />
+	<property name="src.java.API.dir" value="${src.t24service.dir}${file.separator}javaAPI" />
+
+	<property name="build.t24service.dir" value="${build.dir}${file.separator}t24service" />
+	<property name="build.t24service.java.dir" value="${build.t24service.dir}${file.separator}java" />
+	<property name="build.t24service.java.generated.src.dir" value="${build.t24service.java.dir}${file.separator}srcGeneratedByTAFJ" />
+	<property name="build.t24service.java.class.dir" value="${build.t24service.java.dir}${file.separator}class" />
+	<property name="build.t24service.java.dist.dir" value="${build.t24service.java.dir}${file.separator}dist" />
+	<property name="build.t24service.cpp.dir" value="${build.t24service.dir}${file.separator}cpp" />
+	<property name="build.t24service.dot.net.dir" value="${build.t24service.dir}${file.separator}dotnet" />
+	<property name="build.t24service.dot.net.extlib.dir" value="${build.ext.lib.dir}${file.separator}dotnet" />
+	<property name="build.t24service.ext.comp.dir" value="${build.ext.lib.dir}${file.separator}comps" />
+	
+	<property name="dist.t24service.dir" value="${dist.lib.dir}${file.separator}t24service" />
+	<property name="dist.t24service.cpp.dir" value="${dist.t24service.dir}${file.separator}cpp" />
+	<property name="dist.t24service.dot.net.dir" value="${dist.t24service.dir}${file.separator}dotnet" />
+	<property name="dist.t24service.java.dir" value="${dist.t24service.dir}${file.separator}java" />
+
+	<!--t24 data source, build and dist directory structure-->
+	<property name="src.data.dir" value="${src.generated.dir}${file.separator}data" />
+	<property name="src.data.java.dir" value="${src.data.dir}${file.separator}java" />
+	<property name="src.data.cpp.dir" value="${src.data.dir}${file.separator}cpp" />
+	<property name="src.data.dot.net.dir" value="${src.data.dir}${file.separator}dotnet" />
+
+	<property name="build.data.dir" value="${build.dir}${file.separator}data" />
+	<property name="build.data.java.dir" value="${build.data.dir}${file.separator}java" />
+	<property name="build.data.cpp.dir" value="${build.data.dir}${file.separator}cpp" />
+	<property name="build.data.dot.net.dir" value="${build.data.dir}${file.separator}dotnet" />
+
+	<property name="dist.data.dir" value="${dist.lib.dir}${file.separator}data" />
+	<property name="dist.data.java.dir" value="${dist.data.dir}${file.separator}java" />
+	<property name="dist.data.cpp.dir" value="${dist.data.dir}${file.separator}cpp" />
+	<property name="dist.data.dot.net.dir" value="${dist.data.dir}${file.separator}dotnet" />
+
+	<!--t24 proxy adaptor source, build and dist directory structure-->
+	<property name="src.proxy.adaptor.dir" value="${src.generated.dir}${file.separator}proxyAdaptor" />
+	<property name="src.proxy.adaptor.cpp.dir" value="${src.proxy.adaptor.dir}${file.separator}cpp" />
+	<property name="src.proxy.adaptor.java.dir" value="${src.proxy.adaptor.dir}${file.separator}java" />
+
+	<property name="build.proxy.adaptor.dir" value="${build.dir}${file.separator}proxyAdaptor" />
+	<property name="build.proxy.adaptor.java.dir" value="${build.proxy.adaptor.dir}${file.separator}java" />
+	<property name="build.proxy.adaptor.cpp.dir" value="${build.proxy.adaptor.dir}${file.separator}cpp" />
+
+	<property name="dist.proxy.adaptor.dir" value="${dist.lib.dir}${file.separator}proxyAdaptor" />
+	<property name="dist.proxy.adaptor.java.dir" value="${dist.proxy.adaptor.dir}${file.separator}java" />
+	<property name="dist.proxy.adaptor.cpp.dir" value="${dist.proxy.adaptor.dir}${file.separator}cpp" />
+
+	<!--t24 web service source directory structure-->
+	<property name="src.ws.dir" value="${src.generated.dir}${file.separator}ws" />
+	<property name="src.ws.java.dir" value="${src.ws.dir}${file.separator}java" />
+	<property name="src.ws.dotnet.dir" value="${src.ws.dir}${file.separator}dotnet" />
+
+	<property name="build.ws.dir" value="${build.dir}${file.separator}ws" />
+	<property name="build.ws.java.dir" value="${build.ws.dir}${file.separator}java" />
+	<property name="build.ws.java.wsdl.dir" value="${build.ws.java.dir}${file.separator}wsdl" />
+	<property name="build.ws.dotnet.dir" value="${build.ws.dir}${file.separator}dotnet" />
+	<property name="build.ws.dotnet.wsdl.dir" value="${build.ws.dotnet.dir}${file.separator}wsdl" />
+
+	<property name="dist.ws.dir" value="${dist.lib.dir}${file.separator}ws" />
+	<property name="dist.ws.java.dir" value="${dist.ws.dir}${file.separator}java" />
+	<property name="dist.ws.dotnet.dir" value="${dist.ws.dir}${file.separator}dotnet" />
+
+	<!--source and build directories for JBC, C++ and Java testcase -->
+	<property name="test.testcase.dir" value="${test.dir}${file.separator}testcases" />
+	<property name="test.testcase.jbc.dir" value="${test.testcase.dir}${file.separator}JBC" />
+	<property name="test.testcase.cpp.dir" value="${test.testcase.dir}${file.separator}cpp" />
+	<property name="test.testcase.dot.net.dir" value="${test.testcase.dir}${file.separator}dotnet" />
+	<property name="test.testcase.java.dir" value="${test.testcase.dir}${file.separator}java" />
+
+	<property name="testbuild.testcase.dir" value="${testbuild.dir}${file.separator}testcases" />
+	<property name="testbuild.testcase.cpp.dir" value="${testbuild.testcase.dir}${file.separator}cpp" />
+	<property name="testbuild.testcase.dot.net.dir" value="${testbuild.testcase.dir}${file.separator}dotnet" />
+	<property name="testbuild.testcase.java.dir" value="${testbuild.testcase.dir}${file.separator}java" />
+	<property name="testbuild.testcase.jbc.dir" value="${testbuild.testcase.dir}${file.separator}test${file.separator}testcases${file.separator}JBC" />
+
+	<!--source and build directories for mocked external C++ and java service-->
+	<property name="test.mocked.proxy.dir" value="${test.dir}${file.separator}mockedProxy" />
+	<property name="test.mocked.proxy.cpp.dir" value="${test.mocked.proxy.dir}${file.separator}cpp" />
+	<property name="test.mocked.proxy.java.dir" value="${test.mocked.proxy.dir}${file.separator}java" />
+
+	<property name="testbuild.mocked.proxy.dir" value="${testbuild.dir}${file.separator}mockedProxy" />
+	<property name="testbuild.mocked.proxy.cpp.dir" value="${testbuild.mocked.proxy.dir}${file.separator}cpp" />
+	<property name="testbuild.mocked.proxy.java.dir" value="${testbuild.mocked.proxy.dir}${file.separator}java" />
+
+	<!--source and build directories for tafc and tafj easyqa framework-->
+	<property name="test.easyqa.framework.dir" value="${test.dir}${file.separator}easyqa-framework" />
+	<property name="test.easyqa.framework.tafc.dir" value="${test.easyqa.framework.dir}${file.separator}tafc" />
+	<property name="test.easyqa.framework.tafc.util.dir" value="${test.easyqa.framework.tafc.dir}${file.separator}util" />
+	<property name="test.easyqa.framework.tafc.include.dir" value="${test.easyqa.framework.tafc.dir}${file.separator}include" />
+	<property name="test.easyqa.framework.tafj.dir" value="${test.easyqa.framework.dir}${file.separator}tafj" />
+
+	<property name="testbuild.easyqa.framework.dir" value="${testbuild.dir}${file.separator}easyqa-framework" />
+	<property name="testbuild.easyqa.framework.tafc.dir" value="${testbuild.easyqa.framework.dir}${file.separator}tafc" />
+	<property name="testbuild.easyqa.framework.tafj.dir" value="${testbuild.easyqa.framework.dir}${file.separator}tafj" />
+
+	<!--directories related to report-->
+	<property name="report.dir" value="${basedir}${file.separator}report" />
+	<property name="report.test.dir" value="${report.dir}${file.separator}test" />
+
+	<!--properties related t24-->
+	<property name="t24.BP.insert.dir" value="${env.T24_HOME}${file.separator}..${file.separator}T24_BP" />
+	
+	<!--properties and vars related to T24 Design Studio-->
+	<property name="service.design.studio.workspace.dir" value="${src.dir}${file.separator}main${file.separator}ds-models" />
+	<property name="service.design.studio.pom.file" value="${service.design.studio.workspace.dir}${file.separator}pom.xml" />
+	<var name="use.design.studio.as.gen" value="false" />
+	
+	<!--properties related Java-->
+	<path id="javac.classpath">
+		<fileset dir="${env.JAVA_HOME}${file.separator}lib">
+			<include name="**${file.separator}tools.jar" />
+		</fileset>
+	</path>
+
+	<!-- Where is tafj? -->
+	<property name="tafj.dir" value="${env.TAFJ_HOME}" />
+	<property name="tafj.lib.dir" value="${tafj.dir}${file.separator}lib" />
+	<property name="tafj.ext.dir" value="${tafj.dir}${file.separator}ext" />
+	<property name="tafj.conf.file" value="${tafj.dir}${file.separator}conf${file.separator}tafj.properties" />
+
+	<!-- Where is ComponentFramework -->
+	<property name="component.framework.include.dir" value="${env.TAFC_HOME}${file.separator}include${file.separator}ComponentFramework" />
+	<property name="component.framework.lib.dir" value="${env.TAFC_HOME}${file.separator}lib" />
+	<property name="component.framework.wrapper.dll.path" value="${env.TAFC_HOME}${file.separator}bin${file.separator}libComponentFrameworkWrapper.dll" />
+	<property name="component.framework.wrapper.utils.dll.path" value="${env.TAFC_HOME}${file.separator}bin${file.separator}libComponentFrameworkWrapperUtils.dll" />
+
+	<!--google unit test framework-->
+	<property name="google.unittest.framework" value="${build.dir}${file.separator}google" />
+	<property name="google.unitest.framework.src" value="${google.unittest.framework}${file.separator}src" />
+	<property name="google.unittest.framework.include" value="${google.unittest.framework}${file.separator}include" />
+	<property name="google.unittest.runner.prog" value="google_runner.exe" />
+
+	<!--NUnit unit-test framefork for .NET-->
+	<property name="NUnit.framework.dir" value="${build.dir}${file.separator}NUnit-2.6" />
+	<property name="NUnit.framework.bin.dir" value="${NUnit.framework.dir}${file.separator}bin" />
+	<property name="NUnit.framework.dll" value="${NUnit.framework.bin.dir}${file.separator}framework${file.separator}nunit.framework.dll" />
+	<property name="NUnit.console.runner" value="nunit-console.exe" />
+
+	<!-- Axis2 framework -->
+	<property name="axis2.home.dir" value="${build.dir}${file.separator}axis2" />
+	<property name="axis2.bin.dir" value="${axis2.home.dir}${file.separator}bin" />
+	<property name="axis2.lib.dir" value="${axis2.home.dir}${file.separator}lib" />
+	
+	<!-- To publish artifacts on IVY we need to set following -->
+	<property name="publish.dir" value="${basedir}${file.separator}publish" />
+	<property name="artifact.dir" value="${publish.dir}" />
+	<!-- =================================================================== -->
+	<!-- buildlist:  Use Ivy to create a list of projects to build           -->
+	<!-- =================================================================== -->
+	<target name="create.ivy.buildlist" description="Create a list of projects containing the version.xml file">
+		<property name="ivy.buildlist.dir" value="." />
+		<ivy:settings file="${common.ivy.settings.file}" />
+		<ivy:buildlist reference="ivy.buildlist.raw" ivyfilepath="version.xml">
+			<fileset refid="ivy.buildlist.fileset" />
+		</ivy:buildlist>
+		<pathconvert property="ivy.buildlist">
+			<regexpmapper from="(.*)/(.*)\.(.*)" to="\1" handledirsep="true" />
+			<path refid="ivy.buildlist.raw" />
+		</pathconvert>
+	</target>
+
+	<!-- ====================================================== -->
+	<!-- Initialise build process -->
+	<!-- ====================================================== -->
+	<target name="init" unless="build.initialised" depends="ivy.init.platform,ivy.init,env.init,detect-code-generator,clean" description="Initialise the build process">
+		<!-- Initialise classpaths -->
+		<ivy:cachepath pathid="ivy.generate.classpath" conf="generator" />
+		<ivy:cachepath pathid="ivy.compile.classpath" conf="compile" />
+		<ivy:cachepath pathid="ivy.test.classpath" conf="test" />
+		<ivy:cachepath pathid="ivy.axis2.path" conf="axis2" />
+
+		<if>
+			<equals arg1="${use.design.studio.as.gen}" arg2="false" />
+			<then>
+				<if>
+					<isset property="latest.apiGen.dir" />
+					<then>
+						<path id="generate.classpath">
+							<fileset dir="${latest.apiGen.dir}" includes="*apiGen*.jar" />
+						</path>
+					</then>
+					<else>
+						<path id="generate.classpath">
+							<path refid="ivy.generate.classpath" />
+						</path>
+					</else>
+				</if>
+			</then>
+		</if>
+
+		<!-- Download the component level dependencies (if any) -->
+		<ivy:cachepath pathid="ivy.comp.dep.path" conf="componentDep" />
+		<if>
+			<not>
+				<equals arg1="${toString:ivy.comp.dep.path}" arg2=""/>
+			</not>
+			<then>
+				<echo message="Component level dependencies found..." />
+				<mkdir dir="${build.t24service.ext.comp.dir}" />
+				<for param="compPackage">
+					<path refid="ivy.comp.dep.path" />
+					<sequential>
+						<unzip src="@{compPackage}" dest="${build.t24service.ext.comp.dir}" overwrite="true" />
+					</sequential>
+				</for>
+				
+				<!-- Now update the classpath and initialise other useful 'vars' -->
+				<path id="ext.comp.class.path">
+					<fileset dir="${build.t24service.ext.comp.dir}" includes="**/*.jar" excludes="proxyAdaptor/**" />
+				</path>
+				<property name="t24.ext.comp.insert.dir" value="${build.t24service.ext.comp.dir}${file.separator}JBCInsert" />
+				<property name="t24.ext.comp.include.dir" value="${build.t24service.ext.comp.dir}${file.separator}include" />
+				<property name="t24.ext.comp.lib.dir" value="${build.t24service.ext.comp.dir}${file.separator}lib" />
+				<property name="t24.ext.comp.data.dir" value="${t24.ext.comp.lib.dir}${file.separator}data" />
+				<property name="t24.ext.comp.cpp.data.dir" value="${t24.ext.comp.data.dir}${file.separator}cpp" />
+				<property name="t24.ext.comp.dotnet.data.dir" value="${t24.ext.comp.data.dir}${file.separator}dotnet" />
+				<property name="t24.ext.comp.java.data.dir" value="${t24.ext.comp.data.dir}${file.separator}java" />
+				<property name="t24.ext.comp.t24service.dir" value="${t24.ext.comp.lib.dir}${file.separator}t24service" />
+				<property name="t24.ext.comp.t24service.jbc.obj.dir" value="${t24.ext.comp.t24service.dir}${file.separator}cpp" />
+				<property name="t24.ext.comp.t24service.cpp.obj.dir" value="${t24.ext.comp.t24service.jbc.obj.dir}" />
+				<property name="t24.ext.comp.t24service.dotnet.obj.dir" value="${t24.ext.comp.t24service.jbc.obj.dir}${file.separator}dotnet" />
+			</then>
+			<else>
+				<!-- Here we set everything to the default location so that it won't effect on our build if used -->
+				<path id="ext.comp.class.path" />
+				<property name="t24.ext.comp.insert.dir" value="${t24.BP.insert.dir}" />
+				<property name="t24.ext.comp.include.dir" value="${build.data.cpp.dir}" />
+				<property name="t24.ext.comp.lib.dir" value="${build.dir}" />
+				<property name="t24.ext.comp.data.dir" value="${build.data.dir}" />
+				<property name="t24.ext.comp.cpp.data.dir" value="${build.data.cpp.dir}" />
+				<property name="t24.ext.comp.dotnet.data.dir" value="${build.data.dot.net.dir}" />
+				<property name="t24.ext.comp.java.data.dir" value="${build.data.java.dir}" />
+				<property name="t24.ext.comp.t24service.dir" value="${build.t24service.dir}" />
+				<property name="t24.ext.comp.t24service.jbc.obj.dir" value="${build.t24service.cpp.dir}" />
+				<property name="t24.ext.comp.t24service.cpp.obj.dir" value="${build.t24service.cpp.dir}" />
+				<property name="t24.ext.comp.t24service.dotnet.obj.dir" value="${build.t24service.dot.net.dir}" />
+			</else>
+		</if>
+		
+		<path id="compile.classpath">
+			<fileset dir="${tafj.lib.dir}" includes="**/*.jar" />
+			<fileset dir="${tafj.ext.dir}" includes="**/*.jar" />
+			<path refid="ivy.compile.classpath" />
+			<path refid="javac.classpath" />
+			<path refid="ext.comp.class.path" />
+			<pathelement location="${build.data.java.dir}" />
+			<pathelement location="${build.t24service.java.class.dir}" />
+		</path>
+		
+		<path id="test.compile.classpath">
+			<fileset dir="${tafj.lib.dir}" includes="**/*.jar" />
+			<fileset dir="${tafj.ext.dir}" includes="**/*.jar" />
+			<path refid="ivy.test.classpath" />
+			<path refid="javac.classpath" />
+			<path refid="ext.comp.class.path" />
+			<pathelement location="${build.data.java.dir}" />
+			<pathelement location="${build.t24service.java.class.dir}" />
+		</path>
+		
+		<!-- copy and unzip google test framework to local build directory-->
+		<pathconvert property="gtest.ivy.zip">
+			<mapper type="regexp" from="(.*)gtest(.*)\.zip(.*)" to="\0" />
+			<path refid="ivy.test.classpath" />
+		</pathconvert>
+		<unzip src="${gtest.ivy.zip}" dest="${google.unittest.framework}" overwrite="true" />
+
+		<pathconvert property="NUnit.ivy.zip">
+			<mapper type="regexp" from="(.*)NUnit(.*)\.zip(.*)" to="\0" />
+			<path refid="ivy.test.classpath" />
+		</pathconvert>
+		<unzip src="${NUnit.ivy.zip}" dest="${build.dir}" overwrite="true" />
+
+		<!-- Axis2 Dependencies -->
+		<mkdir dir="${axis2.lib.dir}" />
+		<pathconvert property="axis2.ivy.zip">
+			<mapper type="regexp" from="(.*)axis2(.*)\.zip(.*)" to="\0" />
+			<path refid="ivy.axis2.path" />
+		</pathconvert>
+		<unzip src="${axis2.ivy.zip}" dest="${axis2.home.dir}" overwrite="true" />
+
+		<!-- Copy the jRemote.NET Dependencies to local build dir so that we can use it -->
+		<mkdir dir="${build.t24service.dot.net.extlib.dir}" />
+		<ivy:retrieve pattern="${build.t24service.dot.net.extlib.dir}${file.separator}[artifact].[ext]" conf="compileDLL" />
+		
+		<property name="build.initialised" value="true" />
+	</target>
+	
+	<!-- ====================================================== -->
+	<!-- Initialise build process For Testing and Debugging Purpose -->
+	<!-- ====================================================== -->
+	<target name="init-debug" unless="build.initialised" depends="ivy.init.platform,ivy.init,env.init,detect-code-generator" description="Initialise the build process">
+		<!-- Initialise classpaths -->
+		<ivy:cachepath pathid="ivy.generate.classpath" conf="generator" />
+		<ivy:cachepath pathid="ivy.compile.classpath" conf="compile" />
+		<ivy:cachepath pathid="ivy.test.classpath" conf="test" />
+		<ivy:cachepath pathid="ivy.axis2.path" conf="axis2" />
+
+		<if>
+			<equals arg1="${use.design.studio.as.gen}" arg2="false" />
+			<then>
+				<if>
+					<isset property="latest.apiGen.dir" />
+					<then>
+						<path id="generate.classpath">
+							<fileset dir="${latest.apiGen.dir}" includes="*apiGen*.jar" />
+						</path>
+					</then>
+					<else>
+						<path id="generate.classpath">
+							<path refid="ivy.generate.classpath" />
+						</path>
+					</else>
+				</if>
+			</then>
+		</if>
+		
+		<!-- Download the component level dependencies (if any) -->
+		<ivy:cachepath pathid="ivy.comp.dep.path" conf="componentDep" />
+		<if>
+			<not>
+				<equals arg1="${toString:ivy.comp.dep.path}" arg2=""/>
+			</not>
+			<then>
+				<echo message="Component level dependencies found..." />
+				<mkdir dir="${build.t24service.ext.comp.dir}" />
+				<for param="compPackage">
+					<path refid="ivy.comp.dep.path" />
+					<sequential>
+						<unzip src="@{compPackage}" dest="${build.t24service.ext.comp.dir}" overwrite="true" />
+					</sequential>
+				</for>
+				
+				<!-- Now update the classpath and initialise other useful 'vars' -->
+				<path id="ext.comp.class.path">
+					<fileset dir="${build.t24service.ext.comp.dir}" includes="**/*.jar" excludes="proxyAdaptor/**" />
+				</path>
+				<property name="t24.ext.comp.insert.dir" value="${build.t24service.ext.comp.dir}${file.separator}JBCInsert" />
+				<property name="t24.ext.comp.include.dir" value="${build.t24service.ext.comp.dir}${file.separator}include" />
+				<property name="t24.ext.comp.lib.dir" value="${build.t24service.ext.comp.dir}${file.separator}lib" />
+				<property name="t24.ext.comp.data.dir" value="${t24.ext.comp.lib.dir}${file.separator}data" />
+				<property name="t24.ext.comp.cpp.data.dir" value="${t24.ext.comp.data.dir}${file.separator}cpp" />
+				<property name="t24.ext.comp.dotnet.data.dir" value="${t24.ext.comp.data.dir}${file.separator}dotnet" />
+				<property name="t24.ext.comp.java.data.dir" value="${t24.ext.comp.data.dir}${file.separator}java" />
+				<property name="t24.ext.comp.t24service.dir" value="${t24.ext.comp.lib.dir}${file.separator}t24service" />
+				<property name="t24.ext.comp.t24service.jbc.obj.dir" value="${t24.ext.comp.t24service.dir}${file.separator}cpp" />
+				<property name="t24.ext.comp.t24service.cpp.obj.dir" value="${t24.ext.comp.t24service.jbc.obj.dir}" />
+				<property name="t24.ext.comp.t24service.dotnet.obj.dir" value="${t24.ext.comp.t24service.jbc.obj.dir}${file.separator}dotnet" />
+			</then>
+			<else>
+				<!-- Here we set everything to the default location so that it won't effect on our build if used -->
+				<path id="ext.comp.class.path" />
+				<property name="t24.ext.comp.insert.dir" value="${t24.BP.insert.dir}" />
+				<property name="t24.ext.comp.include.dir" value="${build.data.cpp.dir}" />
+				<property name="t24.ext.comp.lib.dir" value="${build.dir}" />
+				<property name="t24.ext.comp.data.dir" value="${build.data.dir}" />
+				<property name="t24.ext.comp.cpp.data.dir" value="${build.data.cpp.dir}" />
+				<property name="t24.ext.comp.dotnet.data.dir" value="${build.data.dot.net.dir}" />
+				<property name="t24.ext.comp.java.data.dir" value="${build.data.java.dir}" />
+				<property name="t24.ext.comp.t24service.dir" value="${build.t24service.dir}" />
+				<property name="t24.ext.comp.t24service.jbc.obj.dir" value="${build.t24service.cpp.dir}" />
+				<property name="t24.ext.comp.t24service.cpp.obj.dir" value="${build.t24service.cpp.dir}" />
+				<property name="t24.ext.comp.t24service.dotnet.obj.dir" value="${build.t24service.dot.net.dir}" />
+			</else>
+		</if>
+		
+		<path id="compile.classpath">
+			<fileset dir="${tafj.lib.dir}" includes="**/*.jar" />
+			<fileset dir="${tafj.ext.dir}" includes="**/*.jar" />
+			<path refid="ivy.compile.classpath" />
+			<path refid="javac.classpath" />
+			<path refid="ext.comp.class.path" />
+			<pathelement location="${build.data.java.dir}" />
+			<pathelement location="${build.t24service.java.class.dir}" />
+		</path>
+		
+		<path id="test.compile.classpath">
+			<fileset dir="${tafj.lib.dir}" includes="**/*.jar" />
+			<fileset dir="${tafj.ext.dir}" includes="**/*.jar" />
+			<path refid="ivy.test.classpath" />
+			<path refid="javac.classpath" />
+			<path refid="ext.comp.class.path" />
+			<pathelement location="${build.data.java.dir}" />
+			<pathelement location="${build.t24service.java.class.dir}" />
+		</path>
+		
+		<!-- copy and unzip google test framework to local build directory-->
+		<pathconvert property="gtest.ivy.zip">
+			<mapper type="regexp" from="(.*)gtest(.*)\.zip(.*)" to="\0" />
+			<path refid="ivy.test.classpath" />
+		</pathconvert>
+		<unzip src="${gtest.ivy.zip}" dest="${google.unittest.framework}" overwrite="true" />
+
+		<pathconvert property="NUnit.ivy.zip">
+			<mapper type="regexp" from="(.*)NUnit(.*)\.zip(.*)" to="\0" />
+			<path refid="ivy.test.classpath" />
+		</pathconvert>
+		<unzip src="${NUnit.ivy.zip}" dest="${build.dir}" overwrite="true" />
+
+		<!-- Axis2 Dependencies -->
+		<mkdir dir="${axis2.lib.dir}" />
+		<pathconvert property="axis2.ivy.zip">
+			<mapper type="regexp" from="(.*)axis2(.*)\.zip(.*)" to="\0" />
+			<path refid="ivy.axis2.path" />
+		</pathconvert>
+		<unzip src="${axis2.ivy.zip}" dest="${axis2.home.dir}" overwrite="true" />
+
+		<!-- Copy the jRemote.NET Dependencies to local build dir so that we can use it -->
+		<mkdir dir="${build.t24service.dot.net.extlib.dir}" />
+		<ivy:retrieve pattern="${build.t24service.dot.net.extlib.dir}${file.separator}[artifact].[ext]" conf="compileDLL" />
+		
+		<property name="build.initialised" value="true" />
+	</target>
+	
+	<!-- ====================================================== -->
+	<!-- Setup code generator -->
+	<!-- ====================================================== -->
+	<target name="detect-code-generator" description="This target will simply set variable to reflect which code generator this T24 service will be using." >
+		<if>
+			<available file="${service.design.studio.pom.file}" /> 
+			<then>
+				<var name="use.design.studio.as.gen" value="true" />
+			</then>
+		</if>
+	</target>
+	
+	<!-- ====================================================== -->
+	<!-- Clean build -->
+	<!-- ====================================================== -->
+	<target name="clean" description="Clean generated source code, build and dist direcotries">
+		<echo message="Clean generated source code, build and dist directories for T24 Service, ${service.name}" />
+		<delete dir="${build.dir}" />
+		<delete dir="${testbuild.dir}" />
+		<delete dir="${report.dir}" />
+		<delete dir="${dist.dir}" />
+		<delete dir="${publish.dir}" />
+		<delete dir="${src.generated.dir}" />
+	</target>
+
+	<!-- ====================================================== -->
+	<!-- run apiGen -->
+	<!-- ====================================================== -->
+	<!-- run apiGen to generated code for the given T24 Service model-->
+	<target name="run-apiGen" unless="apiGen.is.runned" depends="init" description="run service generator to generate source codes for T24 service">
+		<if>
+			<equals arg1="${use.design.studio.as.gen}" arg2="true" />
+			<then>
+				<echo message="Running T24 Design Studio to generate source codes for T24 service, ${service.name}" />
+				<!-- Invokde DS, here we have to invoke maven twice because default mvn clean install
+					target will try to compile the generated code which do not want   -->
+			  	
+				<!-- Run maven on *-models project first and release it as it will be required for *-models-gen project -->
+				<path id="service.design.studio.models.dir.path" >
+					<dirset dir="${service.design.studio.workspace.dir}" includes="*-models" />
+				</path>
+				<maven basedir="${toString:service.design.studio.models.dir.path}"
+					options="-U -s ${toString:maven.settings.file.path}"
+				 	goal="clean install"
+				 	resultproperty="maven.build.result"/>
+				
+				<!-- Now run the *-models-gen project to generate the code -->
+				<path id="service.design.studio.models.gen.dir.path" >
+					<dirset dir="${service.design.studio.workspace.dir}" includes="*-models-gen" />
+				</path>
+				<maven basedir="${toString:service.design.studio.models.gen.dir.path}"
+					options="-U -s ${toString:maven.settings.file.path}"
+				 	goal="clean process-resources"
+				 	resultproperty="maven.build.result"/>
+				
+				<!-- Copy the generated source -->
+				<path id="ds.models-gen.src.path">
+					<dirset dir="${service.design.studio.workspace.dir}">
+						<include name="*-models-gen${file.separator}src" />
+					</dirset>
+				</path>
+				<copy todir="${src.dir}" overwrite="true" >
+					<fileset dir="${toString:ds.models-gen.src.path}" includes="generated/**" />
+				</copy>
+			</then>
+			<else>
+				<echo message="Running apiGen to generate source codes for T24 service, ${service.name}" />
+				<property name="service.uml.file.path" value="${src.dir}${file.separator}main${file.separator}uml${file.separator}${service.name}.xml" />
+				<java classname="com.temenos.t24.model.generator.T24ApiGenerator" fork="yes" failonerror="true" classpathref="generate.classpath">
+					<arg value="${service.uml.file.path}" />
+					<arg value="${src.generated.dir}" />
+					<arg value="T24ServiceGen" />
+					<arg value="ServiceProvider" />
+					<arg value="ProxyAdaptorGen" />
+					<sysproperty key="COMP_MAJOR_VERSION" value="${major.project.version}"/>
+					<sysproperty key="COMP_MINOR_VERSION" value="${minor.project.version}"/>
+				</java>
+			</else>
+		</if>
+		<property name="apiGen.is.runned" value="true" />
+	</target>
+
+	<!-- ====================================================== -->
+	<!-- Compile generated source codes -->
+	<!-- ====================================================== -->
+	<!--check if the compile environment has been setup or not-->
+	<target name="check-environment" unless="env.is.checked">
+		<if>
+			<or>
+				<isset property="env.TAFJ_HOME" />
+				<isset property="env.TAFC_HOME" />
+			</or>
+			<else>
+				<fail message="Environment Variables TAFJ_HOME or TAFC_HOME Must be Set!" />
+			</else>
+		</if>
+		<if>
+			<isset property="env.T24_HOME" />
+			<else>
+				<echo message="T24_HOME is MANDATORY as it is used to obtain basic inserts!" />
+				<fail message="Environment Variable T24_HOME Must be Set!" />
+			</else>
+		</if>
+		<if>
+			<isset property="env.TAFC_HOME" />
+			<then>
+				<if>
+					<and>
+						<isset property="env.JBCEMULATE" />
+						<equals arg1="${env.JBCEMULATE}" arg2="prime" />
+					</and>
+					<then>
+						<echo message="JBCEMULATE: ${env.JBCEMULATE}" />
+					</then>
+					<else>
+						<echo message="JBCEMULATE is MANDATORY to align '${service.name}' with rest of T24 when building for TAFC!" />
+						<fail message="Environment Variable JBCEMULATE Must be set with emulation set to 'prime'!" />
+					</else>
+				</if>
+			</then>
+		</if>
+		<property name="env.is.checked" value="true" />
+	</target>
+
+	<!--set up compile environment-->
+	<target name="init-compile" unless="compile.initialised" depends="check-environment">
+		<echo message="initialise compile environment for T24 Service, ${service.name}" />
+		<delete dir="${build.t24service.java.generated.src.dir}" />
+		<mkdir dir="${build.t24service.java.generated.src.dir}" />
+		<delete dir="${build.t24service.java.class.dir}" />
+		<mkdir dir="${build.t24service.java.class.dir}" />
+		<delete dir="${build.t24service.cpp.dir}" />
+		<mkdir dir="${build.t24service.cpp.dir}" />
+		<delete dir="${build.t24service.dot.net.dir}" />
+		<mkdir dir="${build.t24service.dot.net.dir}" />
+		
+		<delete dir="${build.data.java.dir}" />
+		<mkdir dir="${build.data.java.dir}" />
+		<delete dir="${build.data.cpp.dir}" />
+		<mkdir dir="${build.data.cpp.dir}" />
+		<delete dir="${build.data.dot.net.dir}" />
+		<mkdir dir="${build.data.dot.net.dir}" />
+
+		<delete dir="${build.proxy.adaptor.java.dir}" />
+		<mkdir dir="${build.proxy.adaptor.java.dir}" />
+		<delete dir="${build.proxy.adaptor.cpp.dir}" />
+		<mkdir dir="${build.proxy.adaptor.cpp.dir}" />
+
+		<delete dir="${build.ws.java.dir}" />
+		<mkdir dir="${build.ws.java.dir}" />
+		
+		<delete dir="${build.ws.dotnet.dir}" />
+		<mkdir dir="${build.ws.dotnet.dir}" />
+
+		<property name="compile.initialised" value="true" />
+	</target>
+
+	<!--check if all JBC Impls have been customized or not-->
+	<target name="check-JBC-Impl">
+		<echo message="Checking if all JBC Impls generated have been customized or not" />
+		<if>
+			<not>
+				<available file="${src.customized.JBC.Impl.dir}" type="dir" />
+			</not>
+			<then>
+				<mkdir dir="${src.customized.JBC.Impl.dir}" />
+			</then>
+		</if>
+		<foreach target="check-JBC-Impl-customization" param="file">
+			<path>
+				<fileset dir="${src.JBC.Impl.dir}" includes="*.b" />
+			</path>
+		</foreach>
+	</target>
+
+	<!-- Check if individual JBC Impl has been customized or not-->
+	<target name="check-JBC-Impl-customization">
+		<basename file="${file}" property="file.name" />
+		<if>
+			<available file="${src.customized.JBC.Impl.dir}${file.separator}${file.name}" />
+			<then>
+				<!-- Adaptor has already been customised -->
+				<echo message="INFO: '${file.name}' is already customized" />
+			</then>
+			<else>
+				<echo message="WARNING: JBC Impl '${file.name}' is not customized yet in ${src.customized.JBC.Impl.dir}" />
+				<echo message="         Copying generated JBC Impl ${file} to ${src.customized.JBC.Impl.dir} for customisation." />
+				<copy file="${file}" todir="${src.customized.JBC.Impl.dir}" />
+			</else>
+		</if>
+	</target>
+
+	<!--compile generated source code-->
+	<target name="compile" unless="compile.done" depends="run-apiGen, init-compile, check-JBC-Impl" description="compile generated source codes">
+		<echo message="compile generated source codes" />
+		<if>
+			<isset property="env.TAFC_HOME" />
+			<then>
+				<ant inheritrefs="true">
+					<target name="compile-data-class-for-tafc" />
+					<target name="compile-data-dotnet-wrapper-class-for-tafc" />
+					<target name="compile-t24service-for-tafc" />
+					<target name="compile-t24service-dotnet-wrapper-for-tafc" />
+					<target name="compile-dotnet-wcfservice-for-tafc" />
+					<target name="generate-dotnet-wcfservice-wsdl" />
+					<target name="compile-proxy-adaptor-for-tafc" />
+				</ant>
+			</then>
+		</if>
+
+		<if>
+			<isset property="env.TAFJ_HOME" />
+			<then>
+				<ant inheritrefs="true">
+					<target name="compile-data-class-for-tafj" />
+					<target name="compile-t24service-for-tafj" />
+					<target name="compile-proxy-adaptor-for-tafj" />
+					<target name="compile-java-ws" />
+					<target name="generate-java-ws-wsdl" />
+				</ant>
+			</then>
+		</if>
+	</target>
+
+	<!--compile c++ data class and converter-->
+	<target name="compile-data-class-for-tafc" unless="tafc.compiled.data" depends="init-compile">
+		<echo message="compile c++ data class and converter of T24 service, ${service.name}, for tafc runtime" />
+
+		<delete>
+			<fileset dir="${build.data.cpp.dir}" />
+		</delete>
+		<copy includeemptydirs="false" todir="${build.data.cpp.dir}">
+			<fileset dir="${src.data.cpp.dir}" includes="*.cpp, *.h" />
+		</copy>
+		<fileset id="data.cpp.srcs" dir="${build.data.cpp.dir}">
+			<include name="*.cpp" />
+		</fileset>
+		<pathconvert property="prop.data.cpp.srcs" refid="data.cpp.srcs" pathsep=" ">
+			<flattenmapper />
+		</pathconvert>
+
+		<!-- compile the c++ data class and converter on windows platform-->
+		<if>
+			<equals arg1="${isWindows}" arg2="true" />
+			<then>
+				<exec executable="jcompile" newenvironment="false" dir="${build.data.cpp.dir}" failonerror="true">
+					<arg line="${prop.data.cpp.srcs}" />
+					<arg line="${component.framework.lib.dir}${file.separator}libComponentFramework.lib" />
+					<arg value="-D${service.uppercase.name}DATA_LIB" />
+					<arg value="-slib${service.name}Data.dll" />
+					<arg value="-I${env.TAFC_HOME}${file.separator}include" />
+					<arg value="-I${component.framework.include.dir}" />
+					<arg value="-Urelease=${major.project.version},patch=${minor.project.version}" />
+				</exec>
+			</then>
+		</if>
+		<!-- compile the c++ data class and converter on Linux platform-->
+		<if>
+			<equals arg1="${isLinux}" arg2="true" />
+			<then>
+				<exec executable="jcompile" newenvironment="false" dir="${build.data.cpp.dir}" failonerror="true">
+					<arg line="${prop.data.cpp.srcs}" />
+					<arg value="-D${service.uppercase.name}DATA_LIB" />
+					<arg value="-slib${service.name}Data.so" />
+					<arg value="-I${env.TAFC_HOME}${file.separator}include" />
+					<arg value="-I${component.framework.include.dir}" />
+					<arg value="-L${component.framework.lib.dir}" />
+					<arg value="-lComponentFramework" />
+					<arg value="-Urelease=${major.project.version},patch=${minor.project.version}" />
+				</exec>
+			</then>
+		</if>
+		<!-- compile the c++ data class and converter on Solaris platform-->
+		<if>
+			<equals arg1="${isSolaris}" arg2="true" />
+			<then>
+				<exec executable="jcompile" newenvironment="false" dir="${build.data.cpp.dir}" failonerror="true">
+					<arg line="${prop.data.cpp.srcs}" />
+					<arg value="-D${service.uppercase.name}DATA_LIB" />
+					<arg value="-slib${service.name}Data.so" />
+					<arg value="-I${env.TAFC_HOME}${file.separator}include" />
+					<arg value="-I${component.framework.include.dir}" />
+					<arg value="-L${component.framework.lib.dir}" />
+					<arg value="-lComponentFramework" />
+					<arg value="-Urelease=${major.project.version},patch=${minor.project.version}" />
+					<env key="${CCSLIB_ENV}" value="${SUN_CPP}" />
+				</exec>
+			</then>
+		</if>
+		<!-- compile the c++ data class and converter on AIX platform-->
+		<if>
+			<equals arg1="${isAIX}" arg2="true" />
+			<then>
+				<exec executable="jcompile" newenvironment="false" dir="${build.data.cpp.dir}" failonerror="true">
+					<arg line="${prop.data.cpp.srcs}" />
+					<arg value="-D${service.uppercase.name}DATA_LIB" />
+					<arg value="-slib${service.name}Data.so" />
+					<arg value="-I${env.TAFC_HOME}${file.separator}include" />
+					<arg value="-I${component.framework.include.dir}" />
+					<arg value="-L${component.framework.lib.dir}" />
+					<arg value="-lComponentFramework" />
+					<arg value="-Urelease=${major.project.version},patch=${minor.project.version}" />
+					<env key="${CCSLIB_ENV}" value="${AIX_CPP}" />
+				</exec>
+			</then>
+		</if>
+		<!-- compile the c++ data class and converter on HPUX platform-->
+		<if>
+			<equals arg1="${isHPUX}" arg2="true" />
+			<then>
+				<exec executable="jcompile" newenvironment="false" dir="${build.data.cpp.dir}" failonerror="true">
+					<arg line="${prop.data.cpp.srcs}" />
+					<arg value="-D${service.uppercase.name}DATA_LIB" />
+					<arg value="-slib${service.name}Data.so" />
+					<arg value="-I${env.TAFC_HOME}${file.separator}include" />
+					<arg value="-I${component.framework.include.dir}" />
+					<arg value="-L${component.framework.lib.dir}" />
+					<arg value="-lComponentFramework" />
+					<arg value="-Urelease=${major.project.version},patch=${minor.project.version}" />
+					<env key="${CCSLIB_ENV}" value="${HP_CPP}" />
+				</exec>
+			</then>
+		</if>
+
+		<property name="tafc.compiled.data" value="true" />
+	</target>
+
+	<!--compile c++ data class and converter-->
+	<target name="compile-data-dotnet-wrapper-class-for-tafc" unless="tafc.compiled.data.wrapper" depends="init-compile">
+		<echo message="compile data class .NET wrapper and helper utilities of T24 service, ${service.name}, for tafc runtime" />
+
+		<delete>
+			<fileset dir="${build.data.dot.net.dir}" />
+		</delete>
+		<copy includeemptydirs="false" todir="${build.data.dot.net.dir}">
+			<fileset dir="${src.data.dot.net.dir}" includes="*.cpp, *.h, *.cs" />
+		</copy>
+		<fileset id="data.dot.net.srcs" dir="${build.data.dot.net.dir}">
+			<include name="*.cpp" />
+		</fileset>
+		<pathconvert property="prop.data.dot.net.srcs" refid="data.dot.net.srcs" pathsep=" ">
+			<flattenmapper />
+		</pathconvert>
+
+		<!-- compile the c++ data class and converter on windows platform-->
+		<if>
+			<equals arg1="${isWindows}" arg2="true" />
+			<then>
+				<var name="DOTNET_COMPILE_OPTIONS" value="/clr /nologo /DWIN32 /MD /W3 /GR /EHa /GF /Zi /F5000000 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 /FU${component.framework.wrapper.dll.path}" />
+				<var name="DOTNET_LINKING_OPTIONS" value="/NOLOGO /DLL /INCREMENTAL:NO /NODEFAULTLIB:LIBC /DEFAULTLIB:MSVCRT /DEFAULTLIB:Delayimp /DELAYLOAD:lib${service.name}Data.dll /DELAYLOAD:libComponentFrameworkWrapper.dll" />
+				<!-- compile the c++ source on windows platform-->
+				<exec executable="jcompile" newenvironment="false" dir="${build.data.dot.net.dir}" failonerror="true">
+					<arg line="${prop.data.dot.net.srcs}" />
+					<arg line="${component.framework.lib.dir}${file.separator}libComponentFrameworkWrapper.lib" />
+					<arg line="${build.data.cpp.dir}${file.separator}lib${service.name}Data.lib" />
+					<arg line="-M" />
+					<arg value="-D${service.uppercase.name}DATAWRAPPER_LIB" />
+					<arg value="-slib${service.name}DataWrapper.dll" />
+					<arg value="-I${component.framework.include.dir}" />
+					<arg value="-I${src.data.cpp.dir}" />
+					<env key="CPPOPTS" value="${DOTNET_COMPILE_OPTIONS}" />
+					<env key="CCSLIBOPTS" value="${DOTNET_LINKING_OPTIONS}" />
+				</exec>
+				
+				<!-- Compile C# Data Converter classes here -->
+				<!-- Generate an assembly Info file first to embed version information -->
+				<var name="assemblyInfo" value="// System imports;${line.separator}"/>
+				<var name="assemblyInfo" value="${assemblyInfo}using System;${line.separator}"/>
+			    	<var name="assemblyInfo" value="${assemblyInfo}using System.Reflection;${line.separator}"/>
+				<var name="assemblyInfo" value="${assemblyInfo}// A few assembly level attributes${line.separator}"/>
+				<var name="assemblyInfo" value='${assemblyInfo}[assembly:AssemblyVersion("${major.project.version.dotnet}.${minor.project.version.dotnet}")]${line.separator}'/>
+				<var name="assemblyInfo" value='${assemblyInfo}[assembly:AssemblyDescription("T24 ${service.name} C# Data Converter")]${line.separator}'/>
+				<var name="assemblyInfo" value='${assemblyInfo}[assembly:AssemblyCompany("Temenos")]${line.separator}'/>
+				<echo file="${build.data.dot.net.dir}${file.separator}assemblyInfo.cs">${assemblyInfo}</echo>
+				
+				<!-- Get the file list to compile -->
+				<fileset id="data.dot.net.csharp.srcs" dir="${build.data.dot.net.dir}">
+					<include name="*.cs" />
+				</fileset>
+				<pathconvert property="prop.data.dot.net.csharp.srcs" refid="data.dot.net.csharp.srcs" pathsep=" ">
+					<flattenmapper />
+				</pathconvert>
+				
+				<!-- Get the dependecy list -->
+				<fileset id="dotnet.data.ext.lib.dep" dir="${build.t24service.dot.net.extlib.dir}">
+					<include name="*.dll" />
+				</fileset>
+				<pathconvert property="prop.dotnet.data.ext.lib.dep" refid="dotnet.data.ext.lib.dep" pathsep="${path.separator}">
+					<map from="${dotnet.data.ext.lib.dep}" to="${dotnet.data.ext.lib.dep}" />
+				</pathconvert>
+				<exec executable="csc" newenvironment="false" dir="${build.data.dot.net.dir}" failonerror="true">
+					<arg line="/t:library" />
+					<arg line="/o" />
+					<arg line="/out:lib${service.name}DataWrapperConverter.dll" />
+					<arg line="/recurse:${prop.data.dot.net.csharp.srcs}" />
+					<arg line="/r:${prop.dotnet.data.ext.lib.dep}${path.separator}lib${service.name}DataWrapper.dll${path.separator}${component.framework.wrapper.utils.dll.path}" />
+					<arg line="/platform:x64" />
+				</exec>
+			</then>
+		</if>
+
+		<property name="tafc.compiled.data.wrapper" value="true" />
+	</target>
+
+	<!--compile JBC API, JBC Impl and C++ API for tafc runtime-->
+	<target name="compile-t24service-for-tafc" unless="tafc.compiled.t24service" depends="compile-data-class-for-tafc">
+		<echo message="compile generated JBC API, customzied JBC Impl and C++ API of T24 service, ${service.name}, for tafc runtime" />
+
+		<delete>
+			<fileset dir="${build.t24service.cpp.dir}" />
+		</delete>
+		<!-- Copy generated JBC API, customized JBC Impl and C++ API to build directory -->
+		<copy todir="${build.t24service.cpp.dir}" overwrite="true">
+			<fileset dir="${src.JBC.API.dir}">
+				<include name="**/I_*" />
+				<include name="**/*.b" />
+			</fileset>
+			<fileset dir="${src.cpp.API.dir}">
+				<include name="**/*.cpp" />
+				<include name="**/*.h" />
+			</fileset>
+			<fileset dir="${src.customized.JBC.Impl.dir}">
+				<include name="**/*.b" />
+				<include name="**/I_*" />
+			</fileset>
+		</copy>
+
+		<fileset id="t24service.jbc.src.files" dir="${build.t24service.cpp.dir}">
+			<include name="*.b" />
+			<exclude name="I_*" />
+		</fileset>
+		<pathconvert property="prop.t24service.jbc.src.files" refid="t24service.jbc.src.files" pathsep=" ">
+			<flattenmapper />
+		</pathconvert>
+		<!--when compiling JBC, jcompile can recognize "\" as file separator in "-I" on windows platform-->
+		<!--but some property may have mixed file separator and wrong file separator-->
+		<!--the following is to normalize the file separator-->
+		<path id="src.JBC.API.dir.path">
+			<pathelement location="${src.JBC.API.dir}" />
+		</path>
+		<property name="src.JBC.API.dir.path.prop" refid="src.JBC.API.dir.path" />
+
+		<path id="src.JBC.Insert.dir.path">
+			<pathelement location="${src.JBC.Insert.dir}" />
+		</path>
+
+		<property name="src.JBC.Insert.dir.path.prop" refid="src.JBC.Insert.dir.path" />
+
+		<!-- For External Component -->
+		<path id="t24.ext.comp.insert.dir.path">
+			<pathelement location="${t24.ext.comp.insert.dir}" />
+		</path>
+		<property name="t24.ext.comp.insert.dir.path.prop" refid="t24.ext.comp.insert.dir.path" />
+		
+		<!--two libraries will be generated, one for JBC API and JBC Impl, another for C++ API-->
+		<!--The reason for that is that we don't need to any addtional configuration for T24 environment-->
+		<!--such as add T24_EComponents directory into library path in global .profile-->
+		<if>
+			<equals arg1="${isWindows}" arg2="true" />
+			<then>
+				<exec executable="jcompile" newenvironment="false" dir="${build.t24service.cpp.dir}" failonerror="true">
+					<arg line="${prop.t24service.jbc.src.files}" />
+					<arg value="-slib${service.name}Core.dll" />
+					<arg value="-d" />
+					<!-- T24 include directory -->
+					<arg value="-I${component.framework.include.dir}" />
+					<arg value="-I${src.JBC.Insert.dir.path.prop}" />
+					<arg value="-I${t24.ext.comp.insert.dir.path.prop}" />
+					<arg value="-I${t24.BP.insert.dir}" />
+					<arg value="-Urelease=${major.project.version},patch=${minor.project.version}" />
+				</exec>
+			</then>
+			<else>
+				<exec executable="jcompile" newenvironment="false" dir="${build.t24service.cpp.dir}" failonerror="true">
+					<arg line="${prop.t24service.jbc.src.files}" />
+					<arg value="-slib${service.name}Core.so" />
+					<arg value="-d" />
+					<!-- T24 include directory -->
+					<arg value="-I${component.framework.include.dir}" />
+					<arg value="-I${src.JBC.Insert.dir.path.prop}" />
+					<arg value="-I${t24.ext.comp.insert.dir.path.prop}" />
+					<arg value="-I${t24.BP.insert.dir}" />
+					<arg value="-Urelease=${major.project.version},patch=${minor.project.version}" />
+				</exec>
+			</else>
+		</if>
+
+		<fileset id="t24service.cpp.src.files" dir="${build.t24service.cpp.dir}">
+			<!--include name="*.c" /-->
+			<include name="*.cpp" />
+		</fileset>
+		<pathconvert property="prop.t24service.cpp.src.files" refid="t24service.cpp.src.files" pathsep=" ">
+			<flattenmapper />
+		</pathconvert>
+
+		<if>
+			<equals arg1="${isWindows}" arg2="true" />
+			<then>
+				<exec executable="jcompile" newenvironment="false" dir="${build.t24service.cpp.dir}" failonerror="true">
+					<arg line="${prop.t24service.cpp.src.files}" />
+					<arg line="lib${service.name}Core.lib" />
+					<arg line="${component.framework.lib.dir}${file.separator}libComponentFramework.lib" />
+					<arg line="${build.data.cpp.dir}${file.separator}lib${service.name}Data.lib" />
+					<arg value="-D${service.uppercase.name}_LIB" />
+					<arg value="-slib${service.name}.dll" />
+					<arg value="-d" />
+					<!-- T24 include directory -->
+					<arg value="-I${component.framework.include.dir}" />
+					<arg value="-I${src.data.cpp.dir}" />
+					<arg value="-Urelease=${major.project.version},patch=${minor.project.version}" />
+				</exec>
+			</then>
+		</if>
+		<!-- compile the jbc source on Linux platform-->
+		<if>
+			<equals arg1="${isLinux}" arg2="true" />
+			<then>
+				<exec executable="jcompile" newenvironment="false" dir="${build.t24service.cpp.dir}" failonerror="true">
+					<arg line="${prop.t24service.cpp.src.files}" />
+					<arg value="-D${service.uppercase.name}_LIB" />
+					<arg value="-slib${service.name}.so" />
+					<arg value="-d" />
+					<arg value="-I${component.framework.include.dir}" />
+					<arg value="-I${src.data.cpp.dir}" />
+					<arg value="-L${component.framework.lib.dir}" />
+					<arg value="-lComponentFramework" />
+					<arg value="-L${build.data.cpp.dir}" />
+					<arg value="-l${service.name}Data" />
+					<arg value="-L." />
+					<arg value="-l${service.name}Core" />
+					<arg value="-Urelease=${major.project.version},patch=${minor.project.version}" />
+				</exec>
+			</then>
+		</if>
+		<!-- compile the jbc source on Solaris platform-->
+		<if>
+			<equals arg1="${isSolaris}" arg2="true" />
+			<then>
+				<exec executable="jcompile" newenvironment="false" dir="${build.t24service.cpp.dir}" failonerror="true">
+					<arg line="${prop.t24service.cpp.src.files}" />
+					<arg value="-D${service.name}_LIB" />
+					<arg value="-slib${service.name}.so" />
+					<arg value="-d" />
+					<arg value="-I${component.framework.include.dir}" />
+					<arg value="-I${src.data.cpp.dir}" />
+					<arg value="-L${component.framework.lib.dir}" />
+					<arg value="-lComponentFramework" />
+					<arg value="-L${build.data.cpp.dir}" />
+					<arg value="-l${service.name}Data" />
+					<arg value="-L." />
+					<arg value="-l${service.name}Core" />
+					<arg value="-Urelease=${major.project.version},patch=${minor.project.version}" />
+					<env key="${CCSLIB_ENV}" value="${SUN_CPP}" />
+				</exec>
+			</then>
+		</if>
+		<!-- compile the jbc source on AIX platform-->
+		<if>
+			<equals arg1="${isAIX}" arg2="true" />
+			<then>
+				<exec executable="jcompile" newenvironment="false" dir="${build.t24service.cpp.dir}" failonerror="true">
+					<arg line="${prop.t24service.cpp.src.files}" />
+					<arg value="-D${service.name}_LIB" />
+					<arg value="-slib${service.name}.so" />
+					<arg value="-d" />
+					<arg value="-I${component.framework.include.dir}" />
+					<arg value="-I${src.data.cpp.dir}" />
+					<arg value="-L${component.framework.lib.dir}" />
+					<arg value="-lComponentFramework" />
+					<arg value="-L${build.data.cpp.dir}" />
+					<arg value="-l${service.name}Data" />
+					<arg value="-L." />
+					<arg value="-l${service.name}Core" />
+					<arg value="-Urelease=${major.project.version},patch=${minor.project.version}" />
+					<env key="${CCSLIB_ENV}" value="${AIX_CPP}" />
+				</exec>
+			</then>
+		</if>
+		<!-- compile the jbc source on AIX platform-->
+		<if>
+			<equals arg1="${isHPUX}" arg2="true" />
+			<then>
+				<exec executable="jcompile" newenvironment="false" dir="${build.t24service.cpp.dir}" failonerror="true">
+					<arg line="${prop.t24service.cpp.src.files}" />
+					<arg value="-D${service.name}_LIB" />
+					<arg value="-slib${service.name}.so" />
+					<arg value="-d" />
+					<arg value="-I${component.framework.include.dir}" />
+					<arg value="-I${src.data.cpp.dir}" />
+					<arg value="-L${component.framework.lib.dir}" />
+					<arg value="-lComponentFramework" />
+					<arg value="-L${build.data.cpp.dir}" />
+					<arg value="-l${service.name}Data" />
+					<arg value="-L." />
+					<arg value="-l${service.name}Core" />
+					<arg value="-Urelease=${major.project.version},patch=${minor.project.version}" />
+					<env key="${CCSLIB_ENV}" value="${HP_CPP}" />
+				</exec>
+			</then>
+		</if>
+
+		<property name="tafc.compiled.t24service" value="true" />
+	</target>
+
+
+	<!--compile t24 service .NET API-->
+	<target name="compile-t24service-dotnet-wrapper-for-tafc" unless="tafc.compiled.service.wrapper" depends="init-compile">
+		<echo message="compile .NET wrapper of T24 service, ${service.name}, for tafc runtime" />
+
+		<delete>
+			<fileset dir="${build.t24service.dot.net.dir}" />
+		</delete>
+		<copy includeemptydirs="false" todir="${build.t24service.dot.net.dir}">
+			<fileset dir="${src.dot.net.API.dir}" includes="*.cpp, *.h" />
+		</copy>
+		<fileset id="t24service.dot.net.srcs" dir="${build.t24service.dot.net.dir}">
+			<include name="*.cpp" />
+		</fileset>
+		<pathconvert property="prop.t24service.dot.net.srcs" refid="t24service.dot.net.srcs" pathsep=" ">
+			<flattenmapper />
+		</pathconvert>
+
+		<!-- compile the c++ data class and converter on windows platform-->
+		<if>
+			<equals arg1="${isWindows}" arg2="true" />
+			<then>
+				<var name="DOTNET_COMPILE_OPTIONS" value="/clr /nologo /DWIN32 /MD /W3 /GR /EHa /GF /Zi /F5000000 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 /FU${component.framework.wrapper.dll.path} /FU${build.data.dot.net.dir}${file.separator}lib${service.name}DataWrapper.dll" />
+				<var name="DOTNET_LINKING_OPTIONS" value="/NOLOGO /DLL /INCREMENTAL:NO /NODEFAULTLIB:LIBC /DEFAULTLIB:MSVCRT /DEFAULTLIB:Delayimp /DELAYLOAD:libComponentFrameworkWrapper.dll /DELAYLOAD:libComponentFramework.dll /DELAYLOAD:lib${service.name}Data.dll /DELAYLOAD:lib${service.name}DataWrapper.dll /DELAYLOAD:lib${service.name}.dll" />
+				<!-- compile the c++ source on windows platform-->
+				<exec executable="jcompile" newenvironment="false" dir="${build.t24service.dot.net.dir}" failonerror="true">
+					<arg line="${prop.t24service.dot.net.srcs}" />
+					<arg line="${component.framework.lib.dir}${file.separator}libComponentFrameworkWrapper.lib" />
+					<arg line="${component.framework.lib.dir}${file.separator}libComponentFramework.lib" />
+					<arg line="${build.data.cpp.dir}${file.separator}lib${service.name}Data.lib" />
+					<arg line="${build.data.dot.net.dir}${file.separator}lib${service.name}DataWrapper.lib" />
+					<arg line="${build.t24service.cpp.dir}${file.separator}lib${service.name}.lib" />
+					<arg line="-M" />
+					<arg line="-r" />
+					<arg value="-slib${service.name}Wrapper.dll" />
+					<arg value="-I${component.framework.include.dir}" />
+					<arg value="-I${src.data.cpp.dir}" />
+					<arg value="-I${src.cpp.API.dir}" />
+					<arg value="-I${src.data.dot.net.dir}" />
+					<env key="CPPOPTS" value="${DOTNET_COMPILE_OPTIONS}" />
+					<env key="CCSLIBOPTS" value="${DOTNET_LINKING_OPTIONS}" />
+				</exec>
+			</then>
+		</if>
+
+		<property name="tafc.compiled.service.wrapper" value="true" />
+	</target>
+
+	<!--compile t24 service .NET WCF SErvice -->
+	<target name="compile-dotnet-wcfservice-for-tafc" unless="wcf.service.compiled" depends="init-compile">
+		<echo message="compile .NET WCF Service of T24 service, ${service.name}, for tafc runtime" />
+
+		<delete>
+			<fileset dir="${build.ws.dotnet.dir}" />
+		</delete>
+		<property name="dotnet-ws-bin-dir" value="${build.ws.dotnet.dir}${file.separator}bin" />
+		<mkdir dir="${dotnet-ws-bin-dir}" />
+
+		<!-- Copy the source -->
+		<copy includeemptydirs="false" todir="${build.ws.dotnet.dir}">
+			<fileset dir="${src.ws.dotnet.dir}" includes="**" />
+		</copy>
+		<!-- Generate an assembly Info file first to embed version information -->
+		<var name="assemblyInfo" value="// System imports;${line.separator}"/>
+		<var name="assemblyInfo" value="${assemblyInfo}using System;${line.separator}"/>
+		<var name="assemblyInfo" value="${assemblyInfo}using System.Reflection;${line.separator}"/>
+		<var name="assemblyInfo" value="${assemblyInfo}// A few assembly level attributes${line.separator}"/>
+		<var name="assemblyInfo" value='${assemblyInfo}[assembly:AssemblyVersion("${major.project.version.dotnet}.${minor.project.version.dotnet}")]${line.separator}'/>
+		<var name="assemblyInfo" value='${assemblyInfo}[assembly:AssemblyDescription("T24 ${service.name} WCF Service")]${line.separator}'/>
+		<var name="assemblyInfo" value='${assemblyInfo}[assembly:AssemblyCompany("Temenos")]${line.separator}'/>
+		<echo file="${build.ws.dotnet.dir}${file.separator}assemblyInfo.cs">${assemblyInfo}</echo>
+		
+		<!-- Now get the list -->
+		<fileset id="dotnet.ws.src" dir="${build.ws.dotnet.dir}">
+			<include name="*.cs" />
+		</fileset>
+		<pathconvert property="prop.dotnet.ws.src" refid="dotnet.ws.src" pathsep=" ">
+			<map from="${build.ws.dotnet.dir}" to="${build.ws.dotnet.dir}" />
+		</pathconvert>
+		<!-- Now Copy the dependencies i.e. Service and Service Data DOTNET Wrappers, External Libs etc -->
+		<copy includeemptydirs="false" todir="${dotnet-ws-bin-dir}">
+			<fileset dir="${build.t24service.dot.net.dir}" includes="lib${service.name}Wrapper*.dll" />
+			<fileset dir="${build.data.dot.net.dir}" includes="lib${service.name}DataWrapper*.dll" />
+			<fileset dir="${build.t24service.dot.net.extlib.dir}" includes="*.dll" />
+		</copy>
+		
+		<!-- Prepare Service and Data Dependencies-->
+		<fileset id="dotnet.ws.svc.dep" dir="${dotnet-ws-bin-dir}">
+			<include name="*.dll" />
+		</fileset>
+		<pathconvert property="prop.dotnet.ws.svc.dep" refid="dotnet.ws.svc.dep" pathsep="${path.separator}">
+			<map from="${dotnet-ws-bin-dir}" to="${dotnet-ws-bin-dir}" />
+		</pathconvert>
+		
+		<!-- compile the wcf dotnet service classes on windows platform -->
+		<if>
+			<equals arg1="${isWindows}" arg2="true" />
+			<then>
+				<exec executable="csc" newenvironment="false" dir="${build.ws.dotnet.dir}" failonerror="true">
+					<arg line="/t:library" />
+					<arg line="/out:${dotnet-ws-bin-dir}${file.separator}lib${service.name}WS.dll" />
+					<arg line="/recurse:${prop.dotnet.ws.src}" />
+					<arg line="/r:${prop.dotnet.ws.svc.dep}${path.separator}${component.framework.wrapper.dll.path}${path.separator}${component.framework.wrapper.utils.dll.path}" />
+					<arg line="/platform:x64" />
+				</exec>
+			</then>
+		</if>
+
+		<property name="wcf.service.compiled" value="true" />
+	</target>
+
+	<!-- Generate WCF Service WSDL -->
+	<target name="generate-dotnet-wcfservice-wsdl" unless="wcf.wsdl.generate" depends="compile-dotnet-wcfservice-for-tafc" description="This target will generate WSDL for .NET WCF Service" >
+		<if>
+			<equals arg1="${isWindows}" arg2="true" />
+			<then>
+				<echo message="Genearting WSDL from WCF Web Service for, ${service.name}" />
+				<delete dir="${build.ws.dotnet.wsdl.dir}" />
+				<mkdir dir="${build.ws.dotnet.wsdl.dir}" />
+				
+				<!-- Prepare Service and Data Dependencies-->
+				<fileset id="dotnet.ws.dep" dir="${dotnet-ws-bin-dir}">
+					<include name="lib${service.name}DataWrapper.dll" />
+				</fileset>
+				<pathconvert property="prop.dotnet.ws.dep" refid="dotnet.ws.dep" pathsep="${path.separator}">
+					<map from="${dotnet-ws-bin-dir}" to="${dotnet-ws-bin-dir}" />
+				</pathconvert>
+				
+				<!-- Generate WSDL from contract -->
+				<exec executable="svcutil" newenvironment="false" dir="${build.ws.dotnet.wsdl.dir}" failonerror="true">
+					<arg line="/r:${prop.dotnet.ws.dep}" />
+					<arg line="/r:${component.framework.wrapper.dll.path}" />
+					<arg line="${dotnet-ws-bin-dir}${file.separator}lib${service.name}WS.dll" />
+				</exec>
+			</then>
+		</if>
+		<property name="wcf.wsdl.generate" value="true" /> 
+	</target>
+	
+	
+	<!--compile c++ proxy adaptor-->
+	<target name="compile-proxy-adaptor-for-tafc" unless="tafc.compiled.proxy.adaptor" depends="compile-data-class-for-tafc">
+		<echo message="compile c++ proxy adaptor and their JBC interface of T24 service, ${service.name}, for tafc runtime" />
+
+		<delete>
+			<fileset dir="${build.proxy.adaptor.cpp.dir}">
+			</fileset>
+		</delete>
+
+		<!--copy JBC interface for c++ proxy adaptor and proxy adaptor-->
+		<copy includeemptydirs="false" todir="${build.proxy.adaptor.cpp.dir}">
+			<fileset dir="${src.proxy.adaptor.cpp.dir}" includes="*.cpp, *.h,*.b" />
+		</copy>
+		<fileset id="proxy.adaptor.cpp.srcs" dir="${build.proxy.adaptor.cpp.dir}">
+			<include name="*.cpp" />
+			<include name="*.b" />
+		</fileset>
+		<pathconvert property="prop.proxy.adaptor.cpp.srcs" refid="proxy.adaptor.cpp.srcs" pathsep=" ">
+			<flattenmapper />
+		</pathconvert>
+
+		<!-- compile the c++ proxy adaptor on windows platform-->
+		<if>
+			<equals arg1="${isWindows}" arg2="true" />
+			<then>
+				<exec executable="jcompile" newenvironment="false" dir="${build.proxy.adaptor.cpp.dir}" failonerror="true">
+					<arg line="${prop.proxy.adaptor.cpp.srcs}" />
+					<arg line="${component.framework.lib.dir}${file.separator}libComponentFramework.lib" />
+					<arg line="${build.data.cpp.dir}${file.separator}lib${service.name}Data.lib" />
+					<arg value="-D${service.uppercase.name}PROXYADAPTOR_LIB" />
+					<arg value="-slib${service.name}ProxyAdaptor.dll" />
+					<arg value="-d" />
+					<arg value="-I${env.TAFC_HOME}${file.separator}include" />
+					<arg value="-I${component.framework.include.dir}" />
+					<arg value="-I${src.data.cpp.dir}" />
+					<arg value="-Urelease=${major.project.version},patch=${minor.project.version}" />
+				</exec>
+			</then>
+		</if>
+		<!-- compile the c++ proxy adaptor on Linux platform-->
+		<if>
+			<equals arg1="${isLinux}" arg2="true" />
+			<then>
+				<exec executable="jcompile" newenvironment="false" dir="${build.proxy.adaptor.cpp.dir}" failonerror="true">
+					<arg line="${prop.proxy.adaptor.cpp.srcs}" />
+					<arg value="-D${service.uppercase.name}PROXYADAPTOR_LIB" />
+					<arg value="-slib${service.name}ProxyAdaptor.so" />
+					<arg value="-d" />
+					<arg value="-I${env.TAFC_HOME}${file.separator}include" />
+					<arg value="-I${component.framework.include.dir}" />
+					<arg value="-I${src.data.cpp.dir}" />
+					<arg value="-L${component.framework.lib.dir}" />
+					<arg value="-lComponentFramework" />
+					<arg value="-L${build.data.cpp.dir}" />
+					<arg value="-l${service.name}Data" />
+					<arg value="-Urelease=${major.project.version},patch=${minor.project.version}" />
+				</exec>
+			</then>
+		</if>
+		<!-- compile the c++ proxy adaptor on Solaris platform-->
+		<if>
+			<equals arg1="${isSolaris}" arg2="true" />
+			<then>
+				<exec executable="jcompile" newenvironment="false" dir="${build.proxy.adaptor.cpp.dir}" failonerror="true">
+					<arg line="${prop.proxy.adaptor.cpp.srcs}" />
+					<arg value="-D${service.uppercase.name}PROXYADAPTOR_LIB" />
+					<arg value="-slib${service.name}ProxyAdaptor.so" />
+					<arg value="-d" />
+					<arg value="-I${env.TAFC_HOME}${file.separator}include" />
+					<arg value="-I${component.framework.include.dir}" />
+					<arg value="-I${src.data.cpp.dir}" />
+					<arg value="-L${component.framework.lib.dir}" />
+					<arg value="-lComponentFramework" />
+					<arg value="-L${build.data.cpp.dir}" />
+					<arg value="-l${service.name}Data" />
+					<arg value="-Urelease=${major.project.version},patch=${minor.project.version}" />
+					<env key="${CCSLIB_ENV}" value="${SUN_CPP}" />
+				</exec>
+			</then>
+		</if>
+		<!-- compile the c++ proxy adaptor on AIX platform-->
+		<if>
+			<equals arg1="${isAIX}" arg2="true" />
+			<then>
+				<exec executable="jcompile" newenvironment="false" dir="${build.proxy.adaptor.cpp.dir}" failonerror="true">
+					<arg line="${prop.proxy.adaptor.cpp.srcs}" />
+					<arg value="-D${service.uppercase.name}PROXYADAPTOR_LIB" />
+					<arg value="-slib${service.name}ProxyAdaptor.so" />
+					<arg value="-d" />
+					<arg value="-I${env.TAFC_HOME}${file.separator}include" />
+					<arg value="-I${component.framework.include.dir}" />
+					<arg value="-I${src.data.cpp.dir}" />
+					<arg value="-L${component.framework.lib.dir}" />
+					<arg value="-lComponentFramework" />
+					<arg value="-L${build.data.cpp.dir}" />
+					<arg value="-l${service.name}Data" />
+					<arg value="-Urelease=${major.project.version},patch=${minor.project.version}" />
+					<env key="${CCSLIB_ENV}" value="${AIX_CPP}" />
+				</exec>
+			</then>
+		</if>
+		<!-- compile the c++ proxy adaptor on HPUX platform-->
+		<if>
+			<equals arg1="${isHPUX}" arg2="true" />
+			<then>
+				<exec executable="jcompile" newenvironment="false" dir="${build.proxy.adaptor.cpp.dir}" failonerror="true">
+					<arg line="${prop.proxy.adaptor.cpp.srcs}" />
+					<arg value="-D${service.uppercase.name}PROXYADAPTOR_LIB" />
+					<arg value="-slib${service.name}ProxyAdaptor.so" />
+					<arg value="-d" />
+					<arg value="-I${env.TAFC_HOME}${file.separator}include" />
+					<arg value="-I${component.framework.include.dir}" />
+					<arg value="-I${src.data.cpp.dir}" />
+					<arg value="-L${component.framework.lib.dir}" />
+					<arg value="-lComponentFramework" />
+					<arg value="-L${build.data.cpp.dir}" />
+					<arg value="-l${service.name}Data" />
+					<arg value="-Urelease=${major.project.version},patch=${minor.project.version}" />
+					<env key="${CCSLIB_ENV}" value="${HP_CPP}" />
+				</exec>
+			</then>
+		</if>
+
+		<property name="tafc.compiled.proxy.adaptor" value="true" />
+	</target>
+
+	<!--compile java data class and converter-->
+	<target name="compile-data-class-for-tafj" unless="tafj.compiled.data" depends="init-compile">
+		<echo message="compile Java data class and converter of T24 service, ${service.name}, for tafj runtime" />
+		<javac debug="true" debuglevel="${debuglevel}" destdir="${build.data.java.dir}" includeantruntime="false">
+			<src path="${src.data.java.dir}" />
+			<classpath refid="compile.classpath" />
+		</javac>
+		<property name="tafj.compiled.data" value="true" />
+	</target>
+
+	<!--compile JBC API, JBC Impl and Java API for tafj runtime-->
+	<target name="compile-t24service-for-tafj" unless="tafj.compiled.t24service" depends="compile-data-class-for-tafj">
+		<echo message="compile JBC API, customized JBC Impl and Java API of T24 service, ${service.name} for tafj runtime" />
+		<property name="tafj.conf.file" value="${tafj.dir}${file.separator}conf${file.separator}tafj.properties" />
+
+		<path id="jbc.srcs">
+			<fileset dir="${src.JBC.API.dir}" includes="*.b" />
+			<fileset dir="${src.customized.JBC.Impl.dir}" includes="*.b" excludes="I_*" />
+		</path>
+		<pathconvert property="prop.jbc.srcs" refid="jbc.srcs" pathsep=" ">
+			<map from="${src.JBC.API.dir}" to="${src.JBC.API.dir}" />
+			<map from="${src.customized.JBC.Impl.dir}" to="${src.customized.JBC.Impl.dir}" />
+		</pathconvert>
+		<java classname="com.temenos.tafj.compiler.tcompile" dir="." fork="yes" failonerror="true">
+			<sysproperty key="temn.tafj.directory.java" value="${build.t24service.java.generated.src.dir}" />
+			<sysproperty key="temn.tafj.directory.classes" value="${build.t24service.java.class.dir}" />
+			<sysproperty key="temn.tafj.directory.insert" value="${src.JBC.Insert.dir}${path.separator}${t24.ext.comp.insert.dir}${path.separator}${t24.BP.insert.dir}" />
+			<sysproperty key="temn.tafj.directory.precompile" value="${toString:compile.classpath}" />
+			<sysproperty key="temn.tafj.compiler.no.dependency" value="false" />
+			<sysproperty key="temn.tafj.compiler.no.fake.missing.java" value="true" />
+			<sysproperty key="temn.tafj.compiler.keep.java" value="true" />
+			<sysproperty key="temn.tafj.compiler.insert.name.any" value="false" />
+			<arg line="-cf ${tafj.conf.file} ${prop.jbc.srcs}" />
+			<classpath refid="compile.classpath" />
+		</java>
+
+		<javac debug="true" debuglevel="${debuglevel}" destdir="${build.t24service.java.class.dir}" includeantruntime="false">
+			<src path="${src.java.API.dir}" />
+			<classpath refid="compile.classpath" />
+		</javac>
+
+		<property name="tafj.compiled.t24service" value="true" />
+	</target>
+
+	<!--compile java proxy adaptor-->
+	<target name="compile-proxy-adaptor-for-tafj" unless="tafj.compiled.proxy.adaptor" depends="compile-data-class-for-tafj">
+		<echo message="compile proxy adaptor of T24 service, ${service.name}, for tafj runtime" />
+		<javac debug="true" debuglevel="${debuglevel}" destdir="${build.proxy.adaptor.java.dir}" includeantruntime="false">
+			<src path="${src.proxy.adaptor.java.dir}" />
+			<classpath refid="compile.classpath" />
+		</javac>
+
+		<property name="tafj.compiled.proxy.adaptor" value="true" />
+	</target>
+
+	<!--compile java web service-->
+	<target name="compile-java-ws" unless="java.ws.compiled" depends="init-compile">
+		<path id="java.ws.compile.classpath">
+			<fileset dir="${axis2.lib.dir}">
+				<include name="axis2-kernel*.jar" />
+			</fileset>
+			<path refid="compile.classpath" />
+		</path>
+		<echo message="compile java web service for T24 service, ${service.name}" />
+		<javac debug="true" debuglevel="${debuglevel}" destdir="${build.ws.java.dir}" includeantruntime="false">
+			<src path="${src.ws.java.dir}" />
+			<classpath refid="java.ws.compile.classpath" />
+		</javac>
+
+		<property name="java.ws.compiled" value="true" />
+	</target>
+
+	<!-- Generate Web Service WSDL From Compiled Class -->
+	<target name="generate-java-ws-wsdl" unless="all.wsdl.generated" depends="compile-java-ws" description="This target will call wsdl generator for each java web service class" >
+		<echo message="Generating WSDL from compile java web sevrice for ${service.name}" />
+		<delete dir="${build.ws.java.wsdl.dir}" />
+		<mkdir dir="${build.ws.java.wsdl.dir}" />
+		<!-- Now generate WSDL for each web service. Note: We can have multiple -->
+		<foreach target="java-to-wsdl" param="wsClassfile" inheritrefs="true" >
+			<path>
+				<fileset dir="${build.ws.java.dir}" includes="**${file.separator}**WS.class" />
+			</path>
+		</foreach>
+		
+		<property name="all.wsdl.generated" value="true" />
+	</target>
+	
+	<target name="java-to-wsdl" unless="wsdl.generated" description="This target will generate actual WSDL file for each WS class provided" >
+		<echo message="Generating WSDL for, ${wsClassfile}" />
+		<!-- Prepare classpath -->
+		<path id="axis2.classpath">
+			<!-- Add Axis2 Libraries -->
+			<fileset dir="${axis2.lib.dir}" includes="**/*.jar" />
+			<!-- Java WS Build Directory -->
+			<dirset dir="${build.ws.java.dir}" />
+			<!-- Full compile classpath for data and rest of other classes -->
+			<path refid="compile.classpath" />
+		</path>
+		<!-- Convert java ws class path into a fully qualified name i.e. com.temenos.webservices.[service_name].[service_wsClassName] -->
+		<!-- First Normalise the java web sevrice directory path path -->
+        <path id="build.ws.java.dir.path">
+	        <pathelement location="${build.ws.java.dir}" />
+        </path>
+        <property name="build.ws.java.dir.normalized" refid="build.ws.java.dir.path" />
+		<!-- Now get the fully qualified class name -->
+		<path id="java.ws.class" >
+			<fileset file="${wsClassfile}" />
+		</path>
+		<pathconvert property="trimmed.wsClass" refid="java.ws.class" >
+			<packagemapper from="${build.ws.java.dir.normalized}${file.separator}*.class" to="*"/>
+		</pathconvert>
+		<echo message="Using '${trimmed.wsClass}' as fully qualified web service class name to generate WSDL" />
+		<if>
+			<not>
+				<equals arg1="${trimmed.wsClass}" arg2="" />
+			</not>
+			<then>
+				<property name="axis2.home" value="${axis2.bin.dir}" />
+				<java classname="org.apache.ws.java2wsdl.Java2WSDL" fork="yes" failonerror="true" >
+					<classpath refid="axis2.classpath"/>
+					<arg value="-o"/>
+					<arg value="${build.ws.java.wsdl.dir}"/>
+					<arg value="-cn"/>
+					<arg value="${trimmed.wsClass}"/>
+				</java>
+				<var name="wsdl.generator.check" value="true" />
+			</then>
+			<else>
+				<echo message="Build target failed to determine the fully qualified web service class name!" />
+				<var name="wsdl.generator.check" value="false" />
+			</else>
+		</if>
+		<property name="wsdl.generated" value="${wsdl.generator.check}" />
+	</target>
+
+	<!-- ====================================================== -->
+	<!-- test T24 service component -->
+	<!-- ====================================================== -->
+	<!--set up test environment-->
+	<target name="init-test" unless="test.initialised">
+		<echo message="initialise testing environment for T24 service, ${service.name}" />
+		<delete dir="${report.test.dir}" />
+		<mkdir dir="${report.test.dir}" />
+		<delete dir="${testbuild.testcase.cpp.dir}" />
+		<mkdir dir="${testbuild.testcase.cpp.dir}" />
+		<delete dir="${testbuild.testcase.dot.net.dir}" />
+		<mkdir dir="${testbuild.testcase.dot.net.dir}" />
+		<delete dir="${testbuild.testcase.java.dir}" />
+		<mkdir dir="${testbuild.testcase.java.dir}" />
+
+		<delete dir="${testbuild.mocked.proxy.cpp.dir}" />
+		<mkdir dir="${testbuild.mocked.proxy.cpp.dir}" />
+		<delete dir="${testbuild.mocked.proxy.java.dir}" />
+		<mkdir dir="${testbuild.mocked.proxy.java.dir}" />
+
+		<!--check if there is any JBC testcases in the pre-defined dir-->
+		<condition property="JBC.testcase.dir.exist">
+			<available file="${test.testcase.jbc.dir}" type="dir" />
+		</condition>
+		<if>
+			<isset property="JBC.testcase.dir.exist" />
+			<then>
+				<path id="JBC.testcase.dir.path">
+					<fileset dir="${test.testcase.jbc.dir}" includes="**/*" />
+				</path>
+				<property name="JBC.testcase.dir.path.prop" refid="JBC.testcase.dir.path" />
+				<condition property="JBC.testcase.dir.not.empty">
+					<not>
+						<equals arg1="" arg2="${JBC.testcase.dir.path.prop}" />
+					</not>
+				</condition>
+			</then>
+		</if>
+
+		<!--check if there is any c++ testcase in the pre-defined dir-->
+		<condition property="cpp.testcase.dir.exist">
+			<available file="${test.testcase.cpp.dir}" type="dir" />
+		</condition>
+		<if>
+			<isset property="cpp.testcase.dir.exist" />
+			<then>
+				<path id="cpp.testcase.dir.path">
+					<fileset dir="${test.testcase.cpp.dir}" includes="**/*" />
+				</path>
+				<property name="cpp.testcase.dir.path.prop" refid="cpp.testcase.dir.path" />
+				<condition property="cpp.testcase.dir.not.empty">
+					<not>
+						<equals arg1="" arg2="${cpp.testcase.dir.path.prop}" />
+					</not>
+				</condition>
+			</then>
+		</if>
+
+		<!--check if there is any .NET testcase in the pre-defined dir-->
+		<condition property="dot.net.testcase.dir.exist">
+			<available file="${test.testcase.dot.net.dir}" type="dir" />
+		</condition>
+		<if>
+			<isset property="dot.net.testcase.dir.exist" />
+			<then>
+				<path id="dot.net.testcase.dir.path">
+					<fileset dir="${test.testcase.dot.net.dir}" includes="**/*" />
+				</path>
+				<property name="dot.net.testcase.dir.path.prop" refid="dot.net.testcase.dir.path" />
+				<condition property="dot.net.testcase.dir.not.empty">
+					<not>
+						<equals arg1="" arg2="${dot.net.testcase.dir.path.prop}" />
+					</not>
+				</condition>
+			</then>
+		</if>
+
+		<!--check if there is any java testcase in the pre-defined dir-->
+		<condition property="java.testcase.dir.exist">
+			<available file="${test.testcase.java.dir}" type="dir" />
+		</condition>
+		<if>
+			<isset property="java.testcase.dir.exist" />
+			<then>
+				<path id="java.testcase.dir.path">
+					<fileset dir="${test.testcase.java.dir}" includes="**/*" />
+				</path>
+				<property name="java.testcase.dir.path.prop" refid="java.testcase.dir.path" />
+				<condition property="java.testcase.dir.not.empty">
+					<not>
+						<equals arg1="" arg2="${java.testcase.dir.path.prop}" />
+					</not>
+				</condition>
+			</then>
+		</if>
+
+		<!--check if there is mocked c++ proxy in the pre-defined dir-->
+		<condition property="cpp.mocked.proxy.dir.exist">
+			<available file="${test.mocked.proxy.cpp.dir}" type="dir" />
+		</condition>
+		<if>
+			<isset property="cpp.mocked.proxy.dir.exist" />
+			<then>
+				<path id="cpp.mocked.proxy.dir.path">
+					<fileset dir="${test.mocked.proxy.cpp.dir}" includes="**/*" />
+				</path>
+				<property name="cpp.mocked.proxy.dir.path.prop" refid="cpp.mocked.proxy.dir.path" />
+				<condition property="cpp.mocked.proxy.dir.not.empty">
+					<not>
+						<equals arg1="" arg2="${cpp.mocked.proxy.dir.path.prop}" />
+					</not>
+				</condition>
+			</then>
+		</if>
+
+		<!--check if there is mocked java proxy in the pre-defined dir-->
+		<condition property="java.mocked.proxy.dir.exist">
+			<available file="${test.mocked.proxy.java.dir}" type="dir" />
+		</condition>
+		<if>
+			<isset property="java.mocked.proxy.dir.exist" />
+			<then>
+				<path id="java.mocked.proxy.dir.path">
+					<fileset dir="${test.mocked.proxy.java.dir}" includes="**/*" />
+				</path>
+				<property name="java.mocked.proxy.dir.path.prop" refid="java.mocked.proxy.dir.path" />
+				<condition property="java.mocked.proxy.dir.not.empty">
+					<not>
+						<equals arg1="" arg2="${java.mocked.proxy.dir.path.prop}" />
+					</not>
+				</condition>
+			</then>
+		</if>
+
+		<property name="test.initialised" value="true" />
+	</target>
+
+	<target name="get-easyqa" if="JBC.testcase.dir.not.empty" depends="ivy.init, init-test">
+		<delete dir="${testbuild.easyqa.framework.tafc.dir}" />
+		<mkdir dir="${testbuild.easyqa.framework.tafc.dir}" />
+		<delete dir="${testbuild.easyqa.framework.tafj.dir}" />
+		<mkdir dir="${testbuild.easyqa.framework.tafj.dir}" />
+		<ivy:retrieve pattern="${testbuild.easyqa.framework.dir}/[artifact](.[ext])" conf="easyqa" />
+
+		<echo message="source files in =${testbuild.easyqa.framework.dir}" />
+		<move todir="${testbuild.dir}">
+			<fileset dir="${testbuild.easyqa.framework.dir}">
+				<include name="build.xml" />
+			</fileset>
+		</move>
+
+		<move todir="${testbuild.easyqa.framework.tafj.dir}">
+			<fileset dir="${testbuild.easyqa.framework.dir}">
+				<include name="*.jar" />
+			</fileset>
+		</move>
+
+		<move todir="${testbuild.easyqa.framework.tafc.dir}" includeemptydirs="false">
+			<fileset dir="${testbuild.easyqa.framework.dir}">
+				<include name="EasyQALib*" />
+				<include name="MockFrameworkLib*" />
+				<include name="runner*" />
+			</fileset>
+		</move>
+		<!--make runner execuable on unix platform-->
+		<chmod file="${testbuild.easyqa.framework.tafc.dir}${file.separator}runner" perm="755" />
+
+	</target>
+
+	<!--test t24 service component-->
+	<target name="test" unless="test.done" depends="compile, init-test, run-t24-impl-tests" description="testing T24 service ${service.name}">
+		<echo message="testing T24 service, ${service.name}" />
+		<if>
+			<isset property="env.TAFC_HOME" />
+			<then>
+				<ant inheritrefs="true">
+					<target name="compile-cpp-mocked-proxy" />
+					<target name="compile-cpp-api-testcase" />
+					<target name="compile-dot-net-api-testcase" />
+					<target name="run-tafc-proxy-adaptor-test" />
+					<target name="run-cpp-api-test" />
+					<target name="run-dot-net-api-test" />
+				</ant>
+			</then>
+		</if>
+
+		<if>
+			<isset property="env.TAFJ_HOME" />
+			<then>
+				<ant inheritrefs="true">
+					<target name="compile-java-mocked-proxy" />
+					<target name="compile-java-api-testcase" />
+					<target name="run-tafj-proxy-adaptor-test-using-classpath" />
+					<target name="run-tafj-proxy-adaptor-test-using-tafjhome" />
+					<target name="run-java-api-test" />
+				</ant>
+			</then>
+		</if>
+
+		<property name="test.done" value="true" />
+	</target>
+
+	<target name="run-t24-impl-tests" depends="init-test, create-test-service-jar, get-easyqa" if="JBC.testcase.dir.not.empty">
+		<ant antfile="${testbuild.dir}${file.separator}build.xml" useNativeBasedir="true" target="build-and-run-easyqa-tests" inheritall="no">
+			<property name="client.project" value="${service.name}" />
+			<property name="default.tafc.lib.path" value="${build.t24service.cpp.dir}${path.separator}${build.data.cpp.dir}${path.separator}${soaframework.lib.dir}" />
+			<property name="default.tafj.jar.dir" value="${build.t24service.java.dist.dir}" />
+			<property name="build.dependencies.dir" value="${build.dependencies.dir}" />
+			<!--  files with no whitespaces ending .TST.b -->
+			<property name="test.filename.regexp" value="([^\s]+(?=\.(TST.b))\.\2)" />
+			<property name="client.test.insert.dir" value="${src.JBC.Insert.dir}" />
+			<property name="client.test.insert.dir1" value="${t24.ext.comp.insert.dir}" />
+			<property name="client.test.insert.dir2" value="${t24.BP.insert.dir}" />
+		</ant>
+	</target>
+
+	<target name="create-test-service-jar" if="JBC.testcase.dir.not.empty">
+		<!--dist java data class and converter library-->
+		<delete dir="${build.t24service.java.dist.dir}" />
+		<mkdir dir="${build.t24service.java.dist.dir}" />
+		<jar destfile="${build.t24service.java.dist.dir}${file.separator}t24-${service.name}.jar" filesetmanifest="mergewithoutmain">
+			<manifest>
+				<attribute name="Ant-Version" value="${ant.version}" />
+				<attribute name="Created-By" value="${java.specification.version}(${java.specification.vendor})" />
+				<attribute name="Implementation-Title" value="API and T24 Implemenation of ${service.name}" />
+				<attribute name="Implementation-Major-Version" value="${major.project.version}" />
+				<attribute name="Implementation-Minor-Version" value="${minor.project.version}" />
+				<attribute name="Implementation-Vendor" value="TEMENOS" />
+				<attribute name="Class-Path" value="." />
+			</manifest>
+			<fileset dir="${build.t24service.java.class.dir}">
+				<include name="**/*.class" />
+			</fileset>
+		</jar>
+	</target>
+
+	<!--compile c++ mocked proxy for TAFC-->
+	<target name="compile-cpp-mocked-proxy" if="cpp.mocked.proxy.dir.not.empty">
+		<echo message="compile c++ mocked proxy" />
+		<delete>
+			<fileset dir="${testbuild.mocked.proxy.cpp.dir}" />
+		</delete>
+		<copy includeemptydirs="false" todir="${testbuild.mocked.proxy.cpp.dir}">
+			<fileset dir="${test.mocked.proxy.cpp.dir}" includes="*.h" />
+			<fileset dir="${test.mocked.proxy.cpp.dir}" includes="*.cpp" />
+		</copy>
+		<if>
+			<isset property="isWindows" />
+			<then>
+				<copy file="${test.mocked.proxy.cpp.dir}${file.separator}lib${service.name}Proxy.def" tofile="${testbuild.mocked.proxy.cpp.dir}${file.separator}lib${service.name}Proxy.def" />
+			</then>
+			<else>
+				<copy file="${test.mocked.proxy.cpp.dir}${file.separator}lib${service.name}Proxy.def" tofile="${testbuild.mocked.proxy.cpp.dir}${file.separator}lib${service.name}Proxy.so.el" />
+			</else>
+		</if>
+		<fileset id="cpp.mock.proxy.srcs" dir="${testbuild.mocked.proxy.cpp.dir}">
+			<include name="*.cpp" />
+		</fileset>
+		<pathconvert property="cpp.mock.proxy.srcs.prop" refid="cpp.mock.proxy.srcs" pathsep=" ">
+			<flattenmapper />
+		</pathconvert>
+
+		<!-- compile the c++ mocked proxy on windows platform-->
+		<if>
+			<equals arg1="${isWindows}" arg2="true" />
+			<then>
+				<exec executable="jcompile" newenvironment="false" dir="${testbuild.mocked.proxy.cpp.dir}" failonerror="true">
+					<arg line="${cpp.mock.proxy.srcs.prop}" />
+					<arg line="${component.framework.lib.dir}${file.separator}libComponentFramework.lib" />
+					<arg line="${build.data.cpp.dir}${file.separator}lib${service.name}Data.lib" />
+					<arg value="-D${service.uppercase.name}PROXY_LIB" />
+					<arg value="-slib${service.name}Proxy.dll" />
+					<arg value="-I${component.framework.include.dir}" />
+					<arg value="-I${src.data.cpp.dir}" />
+					<arg value="-I${src.proxy.adaptor.cpp.dir}" />
+				</exec>
+			</then>
+		</if>
+		<!-- compile the c++ mocked proxy on Linux platform-->
+		<if>
+			<equals arg1="${isLinux}" arg2="true" />
+			<then>
+				<exec executable="jcompile" newenvironment="false" dir="${testbuild.mocked.proxy.cpp.dir}" failonerror="true">
+					<arg line="${cpp.mock.proxy.srcs.prop}" />
+					<arg value="-D${service.uppercase.name}PROXY_LIB" />
+					<arg value="-slib${service.name}Proxy.so" />
+					<arg value="-I${component.framework.include.dir}" />
+					<arg value="-I${src.data.cpp.dir}" />
+					<arg value="-I${src.proxy.adaptor.cpp.dir}" />
+					<arg value="-L${component.framework.lib.dir}" />
+					<arg value="-lComponentFramework" />
+					<arg value="-L${build.data.cpp.dir}" />
+					<arg value="-l${service.name}Data" />
+				</exec>
+			</then>
+		</if>
+		<!-- compile the c++ mocked proxy on Solaris platform-->
+		<if>
+			<equals arg1="${isSolaris}" arg2="true" />
+			<then>
+				<exec executable="jcompile" newenvironment="false" dir="${testbuild.mocked.proxy.cpp.dir}" failonerror="true">
+					<arg line="${cpp.mock.proxy.srcs.prop}" />
+					<arg value="-D${service.uppercase.name}PROXY_LIB" />
+					<arg value="-slib${service.name}Proxy.so" />
+					<arg value="-I${component.framework.include.dir}" />
+					<arg value="-I${src.data.cpp.dir}" />
+					<arg value="-I${src.proxy.adaptor.cpp.dir}" />
+					<arg value="-L${component.framework.lib.dir}" />
+					<arg value="-lComponentFramework" />
+					<arg value="-L${build.data.cpp.dir}" />
+					<arg value="-l${service.name}Data" />
+					<env key="${CCSLIB_ENV}" value="${SUN_CPP}" />
+				</exec>
+			</then>
+		</if>
+		<!-- compile the c++ mocked proxy on AIX platform-->
+		<if>
+			<equals arg1="${isAIX}" arg2="true" />
+			<then>
+				<exec executable="jcompile" newenvironment="false" dir="${testbuild.mocked.proxy.cpp.dir}" failonerror="true">
+					<arg line="${cpp.mock.proxy.srcs.prop}" />
+					<arg value="-D${service.uppercase.name}PROXY_LIB" />
+					<arg value="-slib${service.name}Proxy.so" />
+					<arg value="-I${component.framework.include.dir}" />
+					<arg value="-I${src.data.cpp.dir}" />
+					<arg value="-I${src.proxy.adaptor.cpp.dir}" />
+					<arg value="-L${component.framework.lib.dir}" />
+					<arg value="-L${build.data.cpp.dir}" />
+					<arg value="-l${service.name}Data" />
+					<arg value="-lComponentFramework" />
+					<env key="${CCSLIB_ENV}" value="${AIX_CPP}" />
+				</exec>
+			</then>
+		</if>
+		<!-- compile the c++ mocked proxy on HPUX platform-->
+		<if>
+			<equals arg1="${isHPUX}" arg2="true" />
+			<then>
+				<exec executable="jcompile" newenvironment="false" dir="${testbuild.mocked.proxy.cpp.dir}" failonerror="true">
+					<arg line="${cpp.mock.proxy.srcs.prop}" />
+					<arg value="-D${service.uppercase.name}PROXY_LIB" />
+					<arg value="-slib${service.name}Proxy.so" />
+					<arg value="-I${component.framework.include.dir}" />
+					<arg value="-I${src.data.cpp.dir}" />
+					<arg value="-I${src.proxy.adaptor.cpp.dir}" />
+					<arg value="-L${component.framework.lib.dir}" />
+					<arg value="-lComponentFramework" />
+					<arg value="-L${build.data.cpp.dir}" />
+					<arg value="-l${service.name}Data" />
+					<env key="${CCSLIB_ENV}" value="${HP_CPP}" />
+				</exec>
+			</then>
+		</if>
+
+	</target>
+
+	<!--compile c++ api testcases for TAFJ-->
+	<target name="compile-cpp-api-testcase" if="cpp.testcase.dir.not.empty">
+		<echo message="compile c++ API test case" />
+
+		<delete>
+			<fileset dir="${testbuild.testcase.cpp.dir}" includes="**/*" />
+		</delete>
+		<copy includeemptydirs="false" todir="${testbuild.testcase.cpp.dir}">
+			<fileset dir="${test.testcase.cpp.dir}" includes="*.cpp, *.h" />
+			<fileset dir="${google.unittest.framework}" />
+		</copy>
+
+		<copy tofile="${testbuild.testcase.cpp.dir}/gtest-all.cpp" file="${google.unitest.framework.src}/gtest-all.cpp" />
+
+		<fileset id="cpp.api.testcase.srcs" dir="${testbuild.testcase.cpp.dir}" includes="*.cpp, *.b" />
+
+		<pathconvert property="cpp.api.testcase.srcs.prop" refid="cpp.api.testcase.srcs" pathsep=" ">
+			<flattenmapper />
+		</pathconvert>
+		<if>
+			<equals arg1="${isWindows}" arg2="true" />
+			<then>
+				<!-- compile the c++ api testcase on windows platform-->
+				<exec executable="jcompile" newenvironment="false" dir="${testbuild.testcase.cpp.dir}" failonerror="true">
+					<arg line="${cpp.api.testcase.srcs.prop}" />
+					<arg value="${build.data.cpp.dir}${file.separator}lib${service.name}Data.lib" />
+					<arg value="${build.t24service.cpp.dir}${file.separator}lib${service.name}.lib" />
+					<arg value="${component.framework.lib.dir}${file.separator}libComponentFramework.lib" />
+					<arg value="-R" />
+					<arg value="-ogtest_runner.exe" />
+					<arg value="-I${google.unittest.framework.include}" />
+					<arg value="-I${google.unittest.framework}" />
+					<arg value="-I${component.framework.include.dir}" />
+					<arg value="-I${src.cpp.API.dir}" />
+					<arg value="-I${src.data.cpp.dir}" />
+				</exec>
+			</then>
+		</if>
+		<if>
+			<equals arg1="${isLinux}" arg2="true" />
+			<then>
+				<!-- compile the c++ api testcase on Linux platform-->
+				<exec executable="jcompile" newenvironment="false" dir="${testbuild.testcase.cpp.dir}" failonerror="true">
+					<arg line="${cpp.api.testcase.srcs.prop}" />
+					<arg value="-R" />
+					<arg value="-ogtest_runner" />
+					<arg value="-I${google.unittest.framework.include}" />
+					<arg value="-I${google.unittest.framework}" />
+					<arg value="-I${component.framework.include.dir}" />
+					<arg value="-I${src.cpp.API.dir}" />
+					<arg value="-I${src.data.cpp.dir}" />
+					<arg value="-L${build.data.cpp.dir}" />
+					<arg value="-l${service.name}Data" />
+					<arg value="-L${build.t24service.cpp.dir}" />
+					<arg value="-l${service.name}Core" />
+					<arg value="-L${build.t24service.cpp.dir}" />
+					<arg value="-l${service.name}" />
+					<arg value="-L${component.framework.lib.dir}" />
+					<arg value="-lComponentFramework" />
+				</exec>
+			</then>
+		</if>
+		<if>
+			<equals arg1="${isSolaris}" arg2="true" />
+			<then>
+				<!-- compile the c++ api testcase on Solaris platform-->
+				<exec executable="jcompile" newenvironment="false" dir="${testbuild.testcase.cpp.dir}" failonerror="true">
+					<arg line="${cpp.api.testcase.srcs.prop}" />
+					<arg value="-R" />
+					<arg value="-ogtest_runner" />
+					<arg value="-I${google.unittest.framework.include}" />
+					<arg value="-I${google.unittest.framework}" />
+					<arg value="-I${component.framework.include.dir}" />
+					<arg value="-I${src.cpp.API.dir}" />
+					<arg value="-I${src.data.cpp.dir}" />
+					<arg value="-L${build.data.cpp.dir}" />
+					<arg value="-l${service.name}Data" />
+					<arg value="-L${build.t24service.cpp.dir}" />
+					<arg value="-l${service.name}Core" />
+					<arg value="-L${build.t24service.cpp.dir}" />
+					<arg value="-l${service.name}" />
+					<arg value="-L${component.framework.lib.dir}" />
+					<arg value="-lComponentFramework" />
+					<env key="${CCEXE_ENV}" value="${SUN_CPP}" />
+					<env key="${CCEXEOPTS_ENV}" value="${SUN_CPPEXE_OPTS} -o gtest_runner" />
+				</exec>
+			</then>
+		</if>
+		<if>
+			<equals arg1="${isAIX}" arg2="true" />
+			<then>
+				<!-- compile the c++ api testcase on AIX platform-->
+				<exec executable="jcompile" newenvironment="false" dir="${testbuild.testcase.cpp.dir}" failonerror="true">
+					<arg line="${cpp.api.testcase.srcs.prop}" />
+					<arg value="-R" />
+					<arg value="-ogtest_runner" />
+					<arg value="-I${google.unittest.framework.include}" />
+					<arg value="-I${google.unittest.framework}" />
+					<arg value="-I${component.framework.include.dir}" />
+					<arg value="-I${src.cpp.API.dir}" />
+					<arg value="-I${src.data.cpp.dir}" />
+					<arg value="-L${build.data.cpp.dir}" />
+					<arg value="-l${service.name}Data" />
+					<arg value="-L${build.t24service.cpp.dir}" />
+					<arg value="-l${service.name}Core" />
+					<arg value="-L${build.t24service.cpp.dir}" />
+					<arg value="-l${service.name}" />
+					<arg value="-L${component.framework.lib.dir}" />
+					<arg value="-lComponentFramework" />
+					<env key="${CCEXE_ENV}" value="${AIX_CPP}" />
+				</exec>
+			</then>
+		</if>
+		<if>
+			<equals arg1="${isHPUX}" arg2="true" />
+			<then>
+				<!-- compile the c++ api testcase on Linux platform-->
+				<exec executable="jcompile" newenvironment="false" dir="${testbuild.testcase.cpp.dir}" failonerror="true">
+					<arg line="${cpp.api.testcase.srcs.prop}" />
+					<arg value="-R" />
+					<arg value="-ogtest_runner" />
+					<arg value="-I${google.unittest.framework.include}" />
+					<arg value="-I${google.unittest.framework}" />
+					<arg value="-I${component.framework.include.dir}" />
+					<arg value="-I${src.cpp.API.dir}" />
+					<arg value="-I${src.data.cpp.dir}" />
+					<arg value="-L${build.data.cpp.dir}" />
+					<arg value="-l${service.name}Data" />
+					<arg value="-L${build.t24service.cpp.dir}" />
+					<arg value="-l${service.name}Core" />
+					<arg value="-L${build.t24service.cpp.dir}" />
+					<arg value="-l${service.name}" />
+					<arg value="-L${component.framework.lib.dir}" />
+					<arg value="-lComponentFramework" />
+					<env key="${CCEXE_ENV}" value="${HP_CPP}" />
+				</exec>
+			</then>
+		</if>
+	</target>
+
+	<!--compile .NET api testcases for TAFC-->
+	<target name="compile-dot-net-api-testcase" if="dot.net.testcase.dir.not.empty">
+		<echo message="compile .NET API test case" />
+
+		<delete>
+			<fileset dir="${testbuild.testcase.dot.net.dir}" includes="**/*" />
+		</delete>
+		<copy includeemptydirs="false" todir="${testbuild.testcase.dot.net.dir}">
+			<fileset dir="${test.testcase.dot.net.dir}" includes="*.cpp, *.h" />
+		</copy>
+
+		<fileset id="dot.net.api.testcase.srcs" dir="${testbuild.testcase.dot.net.dir}" includes="*.cpp" />
+
+		<pathconvert property="dot.net.api.testcase.srcs.prop" refid="dot.net.api.testcase.srcs" pathsep=" ">
+			<flattenmapper />
+		</pathconvert>
+		<var name="WINDOWS_CPPLIB_OPTS" value="/clr /nologo /DWIN32 /MD /W3 /GR /EHa /GF /Zi /F5000000 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 /FU${component.framework.wrapper.dll.path} /FU${NUnit.framework.dll} /FU${build.data.dot.net.dir}${file.separator}lib${service.name}DataWrapper.dll /FU${build.t24service.dot.net.dir}${file.separator}lib${service.name}Wrapper.dll" />
+		<if>
+			<equals arg1="${isWindows}" arg2="true" />
+			<then>
+				<!-- compile the c++ api testcase on windows platform-->
+				<exec executable="jcompile" newenvironment="false" dir="${testbuild.testcase.dot.net.dir}" failonerror="true">
+					<arg line="${dot.net.api.testcase.srcs.prop}" />
+					<arg line="-slib${service.name}UnitTest.dll" />
+					<arg line="-M" />
+					<env key="CPPOPTS" value="${WINDOWS_CPPLIB_OPTS}" />
+				</exec>
+			</then>
+		</if>
+	</target>
+
+
+	<!--run tafc proxy adaptor test-->
+	<target name="run-tafc-proxy-adaptor-test" if="cpp.mocked.proxy.dir.not.empty">
+		<echo message="testing JBC API to C++ proxy adaptor on TAFC runtime" />
+
+		<!-- Use the QA runner program -->
+		<exec executable="${testbuild.easyqa.framework.tafc.dir}${file.separator}runner" newenvironment="false" dir="${testbuild.testcase.jbc.dir}" failonerror="true">
+			<env key="JBCOBJECTLIST" path="${component.framework.lib.dir}${path.separator}${testbuild.easyqa.framework.tafc.dir}${path.separator}${build.t24service.cpp.dir}${path.separator}${build.proxy.adaptor.cpp.dir}${path.separator}${testbuild.testcase.jbc.dir}${path.separator}${testbuild.mocked.proxy.cpp.dir}" />
+			<!--windows library path env-->
+			<env key="Path" path="${component.framework.lib.dir};${build.data.cpp.dir};${env.PATH};${env.Path}" />
+			<!--HPUX library path env-->
+			<env key="SHLIB_PATH" path="${component.framework.lib.dir}:${build.data.cpp.dir}:${env.SHLIB_PATH}" />
+			<!--AIX library path env-->
+			<env key="LIBPATH" path="${component.framework.lib.dir}:${build.data.cpp.dir}:${env.LIBPATH}" />
+			<!--linux and other unix library path env-->
+			<env key="LD_LIBRARY_PATH" path="${component.framework.lib.dir}:${build.data.cpp.dir}:${env.LD_LIBRARY_PATH}" />
+		</exec>
+	</target>
+
+	<!--run c++ api test-->
+	<target name="run-cpp-api-test" if="cpp.testcase.dir.not.empty">
+		<echo message="testing c++ api to invoke JBC Impl" />
+		<exec executable="${testbuild.testcase.cpp.dir}${file.separator}gtest_runner" newenvironment="false" dir="${testbuild.testcase.cpp.dir}" failonerror="true">
+			<env key="JBCOBJECTLIST" path="${component.framework.lib.dir}${path.separator}${testbuild.easyqa.framework.tafc.dir}${path.separator}${build.t24service.cpp.dir}${path.separator}${testbuild.testcase.jbc.dir}" />
+			<!--windows library path env-->
+			<env key="Path" path="${component.framework.lib.dir};${build.data.cpp.dir};${build.t24service.cpp.dir};${env.Path};${env.PATH}" />
+			<env key="SHLIB_PATH" path="${component.framework.lib.dir}:${build.data.cpp.dir}:${build.t24service.cpp.dir}:${env.SHLIB_PATH}" />
+			<!--AIX library path env-->
+			<env key="LIBPATH" path="${component.framework.lib.dir}:${build.data.cpp.dir}:${build.t24service.cpp.dir}:${env.LIBPATH}" />
+			<!--linux and other unix library path env-->
+			<env key="LD_LIBRARY_PATH" path="${component.framework.lib.dir}:${build.data.cpp.dir}:${build.t24service.cpp.dir}:${env.LD_LIBRARY_PATH}" />
+		</exec>
+	</target>
+
+	<!--run .NET api test-->
+	<target name="run-dot-net-api-test" if="dot.net.testcase.dir.not.empty">
+		<echo message="testing .NET api to invoke C++ API" />
+		<if>
+			<equals arg1="${isWindows}" arg2="true" />
+			<then>
+				<delete>
+					<fileset dir="${NUnit.framework.bin.dir}">
+						<include name="libComponentFramework*" />
+						<include name="lib${service.name}*" />
+					</fileset>
+				</delete>
+
+				<copy todir="${NUnit.framework.bin.dir}">
+					<fileset dir="${testbuild.testcase.dot.net.dir}">
+						<include name="lib${service.name}UnitTest*" />
+					</fileset>
+					<fileset dir="${env.TAFC_HOME}${file.separator}bin">
+						<include name="libComponentFrameworkWrapper*" />
+					</fileset>
+					<fileset dir="${build.data.dot.net.dir}">
+						<include name="lib${service.name}DataWrapper*" />
+					</fileset>
+					<fileset dir="${build.t24service.dot.net.dir}">
+						<include name="lib${service.name}Wrapper*" />
+					</fileset>
+				</copy>
+
+				<exec executable="${NUnit.framework.bin.dir}${file.separator}nunit-console.exe" osfamily="windows" newenvironment="false" dir="${NUnit.framework.bin.dir}" failonerror="true">
+					<arg value="lib${service.name}UnitTest.dll" />
+					<env key="JBCOBJECTLIST" path="${component.framework.lib.dir}${path.separator}${testbuild.easyqa.framework.tafc.dir}${path.separator}${build.t24service.cpp.dir}" />
+					<!--windows library path env-->
+					<env key="Path" path="${component.framework.lib.dir};${build.data.cpp.dir};${build.t24service.cpp.dir};${build.data.dot.net.dir};${env.Path};${env.PATH}" />
+				</exec>
+			</then>
+		</if>
+	</target>
+
+	<!--compile JBC testcases for TAFJ-->
+	<target name="compile-jbc-testcase-for-tafj" if="JBC.testcase.dir.not.empty">
+		<echo message="compile JBC testcases for TAFJ" />
+
+		<path id="JBC.testcase.compile.classpath">
+			<pathelement location="${testbuild.easyqa.framework.tafj.dir}" />
+			<path refid="test.compile.classpath" />
+		</path>
+
+		<path id="jbc.testcase.srcs">
+			<fileset dir="${test.testcase.jbc.dir}${file.separator}tests" includes="*.b" />
+		</path>
+		<pathconvert property="jbc.testcase.srcs.prop" refid="jbc.testcase.srcs" pathsep=" ">
+			<flattenmapper />
+		</pathconvert>
+
+		<java classname="com.temenos.tafj.compiler.tcompile" dir="." fork="yes" failonerror="true">
+			<sysproperty key="temn.tafj.directory.basic" value="${test.testcase.jbc.dir}${file.separator}tests" />
+			<sysproperty key="temn.tafj.directory.java" value="${testbuild.testcase.jbc.dir}" />
+			<sysproperty key="temn.tafj.directory.classes" value="${testbuild.testcase.jbc.dir}" />
+			<sysproperty key="temn.tafj.directory.insert" value="${component.framework.include.dir}${path.separator}${test.easyqa.framework.tafj.dir}${file.separator}include${path.separator}${src.JBC.Insert.dir}${path.separator}${t24.BP.insert.dir}" />
+			<sysproperty key="temn.tafj.directory.precompile" value="${toString:JBC.testcase.compile.classpath}" />
+			<sysproperty key="temn.tafj.compiler.no.dependency" value="false" />
+			<sysproperty key="temn.tafj.compiler.no.fake.missing.java" value="true" />
+			<sysproperty key="temn.tafj.compiler.keep.java" value="true" />
+			<sysproperty key="temn.tafj.compiler.insert.name.any" value="false" />
+			<arg line="-cf ${tafj.conf.file} ${test.testcase.jbc.dir}${file.separator}tests ${jbc.testcase.srcs.prop}" />
+			<classpath refid="JBC.testcase.compile.classpath" />
+		</java>
+	</target>
+
+	<!--compile Java Proxy for TAFJ-->
+	<target name="compile-java-mocked-proxy" if="java.mocked.proxy.dir.not.empty">
+		<echo message="compile java mocked proxy" />
+		<javac debug="true" debuglevel="${debuglevel}" destdir="${testbuild.mocked.proxy.java.dir}" includeantruntime="false">
+			<src path="${test.mocked.proxy.java.dir}" />
+			<classpath refid="test.compile.classpath" />
+		</javac>
+	</target>
+
+	<!--compile java api testcases for TAFJ-->
+	<target name="compile-java-api-testcase" if="java.testcase.dir.not.empty">
+		<echo message="compile java API test case" />
+		<javac debug="true" debuglevel="${debuglevel}" destdir="${testbuild.testcase.java.dir}" includeantruntime="false">
+			<src path="${test.testcase.java.dir}" />
+			<classpath refid="test.compile.classpath" />
+		</javac>
+	</target>
+
+	<!--run tafj proxy adaptor test - When services.properties is in CLASSPATH -->
+	<target name="run-tafj-proxy-adaptor-test-using-classpath" if="java.mocked.proxy.dir.not.empty">
+		<echo message="testing JBC API to java proxy adaptor on TAFJ runtime using CLASSPATH to find services.properties" />
+		
+		<!-- Package all classes as a single jar for testing purpose only -->
+		<jar destfile="${testbuild.dir}${file.separator}proxyAdaptorTests${file.separator}dist${file.separator}tafj${file.separator}t24-${service.name}-proxyAdaptorTest.jar" >
+			<fileset dir="${build.t24service.java.dir}${file.separator}class" includes="**/*.class" />
+			<fileset dir="${build.data.java.dir}" includes="**/*.class" />
+			<fileset dir="${build.proxy.adaptor.java.dir}" includes="**/*.class" />
+			<fileset dir="${testbuild.mocked.proxy.java.dir}" includes="**/*.class" />
+		</jar>
+		<!-- Copy the properties so that CLASSPATH can find it -->
+		<copy file="${test.mocked.proxy.java.dir}${file.separator}services.properties" 
+			todir="${testbuild.dir}${file.separator}proxyAdaptorTests${file.separator}dist${file.separator}tafj" overwrite="true" />
+		
+		<!-- Run EasyQA -->
+		<ant antfile="${testbuild.dir}${file.separator}build.xml" useNativeBasedir="true" target="build-and-run-easyqa-tests" inheritall="no">
+			<!-- Setup the EasyQA here -->
+			<property name="client.project" value="${service.name}" />
+			<property name="test.set.name" value="proxyAdaptorTests" />
+			<property name="ovr.run.tafc.tests" value="false" />
+			<property name="easyqa.test.src.dir" value="${test.testcase.dir}${file.separator}proxyAdaptor" />
+			<property name="mockfwk.stub.src.dir" value="${test.dir}${file.separator}stubs${file.separator}proxyAdaptor" />
+			<property name="${default.tafj.jar.dir}" value="${build.t24service.java.dir}${file.separator}class" />
+			<!--  files with no whitespaces ending .TST.b -->
+			<property name="test.filename.regexp" value="([^\s]+(?=\.(TST.b))\.\2)" />
+			<property name="client.test.insert.dir" value="${src.JBC.Insert.dir}" />
+			<property name="client.test.insert.dir1" value="${t24.ext.comp.insert.dir}" />
+			<property name="client.test.insert.dir2" value="${t24.BP.insert.dir}" />
+
+		</ant>
+		<!-- Delete the file copied earlier -->
+		<delete file="${testbuild.dir}${file.separator}proxyAdaptorTests${file.separator}dist${file.separator}tafj${file.separator}services.properties" />
+	</target>
+
+	<!--run tafj proxy adaptor test - When services.properties is in TAFJ_HOME/conf -->
+	<target name="run-tafj-proxy-adaptor-test-using-tafjhome" if="java.mocked.proxy.dir.not.empty">
+		<echo message="testing JBC API to java proxy adaptor on TAFJ runtime using TAFJ_HOME/conf to find services.properties" />
+		
+		<!-- Package all classes as a single jar for testing purpose only -->
+		<jar destfile="${testbuild.dir}${file.separator}proxyAdaptorTests${file.separator}dist${file.separator}tafj${file.separator}t24-${service.name}-proxyAdaptorTest.jar" >
+			<fileset dir="${build.t24service.java.dir}${file.separator}class" includes="**/*.class" />
+			<fileset dir="${build.data.java.dir}" includes="**/*.class" />
+			<fileset dir="${build.proxy.adaptor.java.dir}" includes="**/*.class" />
+			<fileset dir="${testbuild.mocked.proxy.java.dir}" includes="**/*.class" />
+		</jar>
+		<!-- Copy the properties file in TAFJ_HOME/conf -->
+		<copy file="${test.mocked.proxy.java.dir}${file.separator}services.properties" todir="${tafj.dir}${file.separator}conf" overwrite="true" />
+		
+		<ant antfile="${testbuild.dir}${file.separator}build.xml" useNativeBasedir="true" target="build-and-run-easyqa-tests" inheritall="no">
+			<!-- Setup the EasyQA here -->
+			<property name="client.project" value="${service.name}" />
+			<property name="test.set.name" value="proxyAdaptorTests" />
+			<property name="ovr.run.tafc.tests" value="false" />
+			<property name="easyqa.test.src.dir" value="${test.testcase.dir}${file.separator}proxyAdaptor" />
+			<property name="mockfwk.stub.src.dir" value="${test.dir}${file.separator}stubs${file.separator}proxyAdaptor" />
+			<property name="${default.tafj.jar.dir}" value="${build.t24service.java.dir}${file.separator}class" />
+			<!--  files with no whitespaces ending .TST.b -->
+			<property name="test.filename.regexp" value="([^\s]+(?=\.(TST.b))\.\2)" />
+			<property name="client.test.insert.dir" value="${src.JBC.Insert.dir}" />
+			<property name="client.test.insert.dir1" value="${t24.ext.comp.insert.dir}" />
+			<property name="client.test.insert.dir2" value="${t24.BP.insert.dir}" />
+		</ant>
+		<!-- Delete the properties file to clear the environment -->
+		<delete file="${tafj.dir}${file.separator}conf${file.separator}services.properties" />
+	</target>
+
+	<!--run java api test-->
+	<target name="run-java-api-test" if="java.testcase.dir.not.empty">
+		<echo message="testing java api to invoke JBC Impl" />
+
+		<junit dir="${basedir}" fork="no" printsummary="yes" showoutput="yes" failureProperty="test.failure">
+			<jvmarg value="-Xmx1G" />
+			<jvmarg value="-Xms512M" />
+			<jvmarg value="-Xmn150M" />
+			<!-- assertions enabled for all -->
+			<jvmarg value="-ea" />
+
+			<classpath>
+				<pathelement location="${testbuild.testcase.java.dir}" />
+				<path refid="test.compile.classpath" />
+			</classpath>
+
+			<formatter type="xml" />
+			<batchtest fork="yes" todir="${report.test.dir}">
+				<fileset dir="${testbuild.testcase.java.dir}">
+					<include name="**/Test*.class" />
+					<include name="**/*Test.class" />
+				</fileset>
+			</batchtest>
+		</junit>
+
+		<antcall target="publish-junit-test-report" inheritall="true" />
+		<antcall target="if-junit-failed" inheritall="true" />
+	</target>
+
+	<target name="if-junit-failed" if="test.failure">
+		<fail message="One or more junit tests failed. See report/test for details." />
+	</target>
+
+	<target name="publish-junit-test-report">
+		<echo message="convert test results to HTML and publish" />
+		<echo message="param junit.output.dir is ${junit.output.dir}" />
+		<junitreport todir="${report.test.dir}">
+			<fileset dir="${report.test.dir}">
+				<include name="TEST-*.xml" />
+			</fileset>
+			<report format="frames" todir="${report.test.dir}" />
+		</junitreport>
+	</target>
+
+
+	<!-- ====================================================== -->
+	<!-- Dist artifact of T24 service component -->
+	<!-- ====================================================== -->
+	<!--set up compile environment-->
+	<target name="init-dist" unless="dist.initialised">
+		<echo message="initialise dist environment for T24 service, ${service.name}" />
+		<delete dir="${dist.include.dir}" />
+		<mkdir dir="${dist.include.dir}" />
+		<delete dir="${dist.JBC.insert.dir}" />
+		<mkdir dir="${dist.JBC.insert.dir}" />
+		<delete dir="${dist.t24.data.item.dir}" />
+		<mkdir dir="${dist.t24.data.item.dir}" />
+
+		<delete dir="${dist.data.cpp.dir}" />
+		<mkdir dir="${dist.data.cpp.dir}" />
+		<delete dir="${dist.data.java.dir}" />
+		<mkdir dir="${dist.data.java.dir}" />
+
+		<delete dir="${dist.t24service.cpp.dir}" />
+		<mkdir dir="${dist.t24service.cpp.dir}" />
+		<delete dir="${dist.t24service.dot.net.dir}" />
+		<mkdir dir="${dist.t24service.dot.net.dir}" />
+		<delete dir="${dist.t24service.java.dir}" />
+		<mkdir dir="${dist.t24service.java.dir}" />
+
+		<delete dir="${dist.proxy.adaptor.cpp.dir}" />
+		<mkdir dir="${dist.proxy.adaptor.cpp.dir}" />
+		<delete dir="${dist.proxy.adaptor.java.dir}" />
+		<mkdir dir="${dist.proxy.adaptor.java.dir}" />
+
+		<delete dir="${dist.ws.java.dir}" />
+		<mkdir dir="${dist.ws.java.dir}" />
+
+		<delete dir="${dist.ws.dotnet.dir}" />
+		<mkdir dir="${dist.ws.dotnet.dir}" />
+
+		<delete dir="${publish.dir}" />
+		<mkdir dir="${publish.dir}" />
+		
+		<property name="dist.initialised" value="true" />
+	</target>
+
+	<!--compile generated source code-->
+	<target name="dist" unless="dist.done" depends="compile, test, init-dist" description="dist artifacts of T24 service ${service.name}">
+		<echo message="dist artifacts of T24 service, ${service.name}" />
+		
+		<!-- Some common artifacts like JBCInserts, Data items etc -->
+		<ant inheritrefs="true">
+			<target name="dist-common-artifacts" />
+		</ant>
+		
+		<!-- Now for TAFC -->
+		<if>
+			<isset property="env.TAFC_HOME" />
+			<then>
+				<ant inheritrefs="true">
+					<target name="dist-tafc-artifact" />
+					<target name="dist-dotnet-ws" />
+				</ant>
+			</then>
+		</if>
+		<!-- Now for TAFJ -->
+		<if>
+			<isset property="env.TAFJ_HOME" />
+			<then>
+				<ant inheritrefs="true">
+					<target name="dist-tafj-artifact" />
+					<target name="dist-java-ws" />
+				</ant>
+			</then>
+		</if>
+		
+		<!-- Release and publish the artifacts - Only applicable for T24 Enterprise Services -->
+		<antcall inheritrefs="true">
+			<target name="dist-common" />
+			<target name="prepare-to-publish" />
+			<param name="publishHaltOnMissing" value="false" />
+			<target name="publish" />
+			<target name="p4publish" />
+		</antcall>
+		
+		<property name="dist.done" value="true" />
+	</target>
+
+	<!-- dist artifacts which are common for both TAFC and TAFJ -->
+	<target name="dist-common-artifacts">
+		<echo message="dist common artifact for T24 service, ${service.name}" />
+
+		<!--dist JBC insert for the given t24 service-->
+		<copy todir="${dist.JBC.insert.dir}">
+			<fileset dir="${src.JBC.Insert.dir}" />
+		</copy>
+		
+		<!--dist T24 Data Items for the given t24 service-->
+		<condition property="datadirExists">
+			<available file="${src.t24.data.item.dir}" type="dir"/>
+		</condition>
+		<if>
+			<equals arg1="${datadirExists}" arg2="true" />
+			<then>
+				<copy todir="${dist.t24.data.item.dir}" overwrite="true">
+					<fileset dir="${src.t24.data.item.dir}" includes="**" />
+				</copy>		
+			</then>
+		</if>
+	</target>
+		
+	<!--dist c++ data class and converter library-->
+	<target name="dist-tafc-artifact">
+		<echo message="dist tafc artifact for T24 service, ${service.name}" />
+
+		<!--dist C++ .h for the given t24 service-->
+		<copy todir="${dist.include.dir}">
+			<fileset dir="${src.data.cpp.dir}" includes="*.h" />
+			<fileset dir="${src.data.dot.net.dir}" includes="*.h" />
+			<fileset dir="${src.cpp.API.dir}" includes="*.h" />
+			<fileset dir="${src.dot.net.API.dir}" includes="*.h" />
+			<fileset dir="${src.proxy.adaptor.cpp.dir}" includes="*.h" />
+		</copy>
+
+		<!--dist c++ data class and converter library-->
+		<copy todir="${dist.data.cpp.dir}">
+			<fileset dir="${build.data.cpp.dir}">
+				<include name="**/lib${service.name}Data*" />
+			</fileset>
+		</copy>
+
+		<!--dist data .net wrapper class and marshal library-->
+		<copy todir="${dist.data.dot.net.dir}">
+			<fileset dir="${build.data.dot.net.dir}">
+				<include name="**/lib${service.name}DataWrapper*" />
+			</fileset>
+		</copy>
+
+		<!--dist t24 service library for tafc library-->
+		<copy todir="${dist.t24service.cpp.dir}">
+			<fileset dir="${build.t24service.cpp.dir}">
+				<include name="**/lib${service.name}*" />
+			</fileset>
+		</copy>
+
+		<!--dist t24 service .net wrapper library-->
+		<copy todir="${dist.t24service.dot.net.dir}">
+			<fileset dir="${build.t24service.dot.net.dir}">
+				<include name="**/lib${service.name}Wrapper*" />
+			</fileset>
+		</copy>
+
+		<!--dist t24 service c++ proxy adaptor library-->
+		<copy todir="${dist.proxy.adaptor.cpp.dir}">
+			<fileset dir="${build.proxy.adaptor.cpp.dir}">
+				<include name="**/lib${service.name}ProxyAdaptor*" />
+			</fileset>
+		</copy>
+	</target>
+
+	<!-- Dist the DotNET WCF Service For TAFC -->
+	<target name="dist-dotnet-ws">
+		<!-- Check if build is for Windows -->
+		<if>
+			<equals arg1="${isWindows}" arg2="true" />
+			<then>
+				<echo message="dist DOTNET WCF Service for T24 service, ${service.name}" />
+				<zip destfile="${dist.ws.dotnet.dir}/t24-${service.name}-dotnetws.zip">
+					<fileset dir="${build.ws.dotnet.dir}">
+						<include name="*.svc" />
+						<include name="bin${file.separator}**" />
+						<include name="*.config" />
+						<include name="*.asax" />
+					</fileset>
+				</zip>
+				
+				<!-- Copy the WSDL seperatly -->
+				<copy todir="${dist.ws.dotnet.dir}" overwrite="true">
+					<fileset dir="${build.ws.dotnet.dir}">  
+						<include name="wsdl${file.separator}**"/>
+					</fileset> 
+				</copy>
+			</then>
+		</if>
+	</target>
+
+	<target name="dist-tafj-artifact">
+		<echo message="dist tafj artifact for T24 Service, ${service.name}" />
+		<!--dist java data class and converter library-->
+		<jar destfile="${dist.data.java.dir}${file.separator}t24-${service.name}-Data.jar" filesetmanifest="mergewithoutmain">
+			<manifest>
+				<attribute name="Ant-Version" value="${ant.version}" />
+				<attribute name="Created-By" value="${java.specification.version}(${java.specification.vendor})" />
+				<attribute name="Implementation-Title" value="Data Classes and Conveters of ${service.name}" />
+				<attribute name="Implementation-Major-Version" value="${major.project.version}" />
+				<attribute name="Implementation-Minor-Version" value="${minor.project.version}" />
+				<attribute name="Implementation-Vendor" value="TEMENOS" />
+				<attribute name="Class-Path" value="." />
+			</manifest>
+			<fileset dir="${build.data.java.dir}">
+				<include name="**/*.class" />
+			</fileset>
+		</jar>
+
+		<!--dist java data class and converter library-->
+		<jar destfile="${dist.t24service.java.dir}${file.separator}t24-${service.name}.jar" filesetmanifest="mergewithoutmain">
+			<manifest>
+				<attribute name="Ant-Version" value="${ant.version}" />
+				<attribute name="Created-By" value="${java.specification.version}(${java.specification.vendor})" />
+				<attribute name="Implementation-Title" value="API and T24 Implemenation of ${service.name}" />
+				<attribute name="Implementation-Major-Version" value="${major.project.version}" />
+				<attribute name="Implementation-Minor-Version" value="${minor.project.version}" />
+				<attribute name="Implementation-Vendor" value="TEMENOS" />
+				<attribute name="Class-Path" value="." />
+			</manifest>
+			<fileset dir="${build.t24service.java.class.dir}">
+				<include name="**/*.class" />
+			</fileset>
+		</jar>
+
+		<!--dist java data class and converter library-->
+		<jar destfile="${dist.proxy.adaptor.java.dir}${file.separator}t24-${service.name}-ProxyAdaptor.jar" filesetmanifest="mergewithoutmain">
+			<manifest>
+				<attribute name="Ant-Version" value="${ant.version}" />
+				<attribute name="Created-By" value="${java.specification.version}(${java.specification.vendor})" />
+				<attribute name="Implementation-Title" value="Java Proxy Adaptor of ${service.name}" />
+				<attribute name="Implementation-Major-Version" value="${major.project.version}" />
+				<attribute name="Implementation-Minor-Version" value="${minor.project.version}" />
+				<attribute name="Implementation-Vendor" value="TEMENOS" />
+				<attribute name="Class-Path" value="." />
+			</manifest>
+			<fileset dir="${build.proxy.adaptor.java.dir}">
+				<include name="**/*.class" />
+			</fileset>
+		</jar>
+	</target>
+
+	<target name="dist-java-ws">
+		<echo message="dist Java web service for T24 service, ${service.name}" />
+		<!-- Copy the scatered files in one place before package -->
+		<copy toDir="${build.ws.java.dir}" overwrite="true">
+			<fileset dir="${build.t24service.java.class.dir}" includes="**${file.separator}${service.name}.class" />
+		</copy>
+		<copy file="${src.ws.java.dir}${file.separator}META-INF${file.separator}services.xml" tofile="${build.ws.java.dir}${file.separator}META-INF${file.separator}services.xml" overwrite="true" />
+		<copy toDir="${build.ws.java.dir}" overwrite="true">
+			<fileset dir="${src.ws.java.dir}" includes="*Context.xml" />
+		</copy>
+		<jar destfile="${dist.ws.java.dir}${file.separator}t24-${service.name}-jws.aar">
+			<manifest>
+				<attribute name="Ant-Version" value="${ant.version}" />
+				<attribute name="Created-By" value="${java.specification.version}(${java.specification.vendor})" />
+				<attribute name="Implementation-Title" value="Java Web Service of ${service.name}" />
+				<attribute name="Implementation-Major-Version" value="${major.project.version}" />
+				<attribute name="Implementation-Minor-Version" value="${minor.project.version}" />
+				<attribute name="Implementation-Vendor" value="TEMENOS" />
+				<attribute name="Class-Path" value="." />
+			</manifest>
+			<fileset dir="${build.ws.java.dir}">
+				<include name="**/*.class" />
+				<include name="**/*Context.xml" />
+				<include name="**/services.xml" />
+			</fileset>
+		</jar>
+
+		<jar destfile="${dist.ws.java.dir}${file.separator}t24-${service.name}-provider.jar">
+			<manifest>
+				<attribute name="Ant-Version" value="${ant.version}" />
+				<attribute name="Created-By" value="${java.specification.version}(${java.specification.vendor})" />
+				<attribute name="Implementation-Title" value="Java Provider of ${service.name}" />
+				<attribute name="Implementation-Major-Version" value="${major.project.version}" />
+				<attribute name="Implementation-Minor-Version" value="${minor.project.version}" />
+				<attribute name="Implementation-Vendor" value="TEMENOS" />
+				<attribute name="Class-Path" value="." />
+			</manifest>
+			<fileset dir="${build.ws.java.dir}">
+				<include name="**/*.class" />
+				<include name="**/*Context.xml" />
+				<exclude name="**/*SpringInit.class" />
+				<exclude name="**/META-INF/**" />
+				<exclude name="**/webservices/**" />
+			</fileset>
+		</jar>
+		
+		<!-- Simply copy the WSDL directory -->
+		<copy todir="${dist.ws.java.dir}" overwrite="true">
+			<fileset dir="${build.ws.java.dir}">  
+				<include name="wsdl${file.separator}**"/>
+			</fileset>
+		</copy>
+	</target>
+	
+	<!-- =================================================================== -->
+	<!-- Distribute release artifacts to common directory                    -->
+	<!-- =================================================================== -->
+	<target name="dist-common" if="common.dist.dir.os" >
+		<mkdir dir="${common.dist.dir.os}${file.separator}${project.name}" />
+		<copy todir="${common.dist.dir.os}${file.separator}${project.name}" overwrite="true">
+			<fileset dir="${dist.dir}">
+				<include name="**/*" />
+			</fileset>
+		</copy>
+	</target>
+	
+	<!-- ================================================================== -->
+	<!-- Prepare artifacts to publish directory                    			-->
+	<!-- ================================================================== -->
+	<target name="prepare-to-publish" if="publish.dir" >
+		<!-- Zip the common artifacts for all platforms i.e. Includes, Inserts and Java Artifacts -->
+		<zip destfile="${publish.dir}${file.separator}${service.name}.zip" >
+		    <fileset dir="${dist.dir}" 
+		    	includes="Data/**, include/**, JBCInsert/**, lib/**/java/**" />
+		</zip>
+		<!-- Now zip the platform dependent artefacts i.e. C++ and .NET (if avaialble) -->
+		<delete dir="${publish.dir}${file.separator}${platform}" />
+		<mkdir dir="${publish.dir}${file.separator}${platform}" />
+		<zip destfile="${publish.dir}${file.separator}${platform}${file.separator}${service.name}.zip" >
+		    <fileset dir="${dist.dir}" 
+		    	excludes="Data/**, include/**, JBCInsert/**, lib/**/java/**" />
+		</zip>
+	</target>
+	
+	<!-- ================================================================== -->
+	<!-- Macro to execute maven				                    			-->
+	<!-- ================================================================== -->
+	<macrodef name="maven">
+		<attribute name="options" default="" />
+		<attribute name="goal" />
+		<attribute name="basedir" />
+		<attribute name="resultproperty" default="maven.result" />
+		<element name="args" implicit="true" optional="true" />
+		<sequential>
+			<java classname="org.codehaus.classworlds.Launcher" 
+				fork="true" 
+				dir="@{basedir}" 
+				failonerror="true"
+				resultproperty="@{resultproperty}">
+				<jvmarg value="-Xmx512m"/>
+				<classpath>
+					<fileset dir="${maven.home}/boot">
+						<include name="*.jar" />
+				  	</fileset>
+				  	<fileset dir="${maven.home}/lib">
+						<include name="*.jar" />
+			  		</fileset>
+				</classpath>
+				<sysproperty key="classworlds.conf" value="${maven.home}/bin/m2.conf" />
+				<sysproperty key="maven.home" value="${maven.home}" />
+				<arg line="--batch-mode @{options} @{goal}" />
+		  	</java>
+		</sequential>
+	</macrodef>
+	
+</project>

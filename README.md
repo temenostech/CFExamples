@@ -55,15 +55,27 @@ Refer to the test class OfsConnectorComponentTest under com.temenos.services.ofs
 
 ## Sample - ofsconn-appsrv-provider-test
 
-This sample demonstrate how a web servlet can instatiate and invoke Component Java Provider API. To build apply following command;
+This sample demonstrate how a web servlet can instatiate and invoke Component Java Provider API. This requires deploying Component API into TAFJ environment. Copy the following JAR's under TAFJ_MB_DIR/T24/Components/OFSConnector (create a directory if its does not exist) directory;
+
+<pre>
+	./dist/release/OFSConnector/lib/data/java/t24-OFSConnectorService-Data.jar
+	./dist/release/OFSConnector/lib/t24service/java/t24-OFSConnectorService.jar
+</pre>
+
+And add following entry in your tafj-service.xml under JBOSS_HOME/server/R12GA/deploy directory;
+<pre>
+	<classpath codebase="${jboss.home.url}/../../../T24/Component/OFSConnector" archives="*"/>
+</pre>
+
+Now build the project by apply following command;
 <pre>
 	cd ofsconn-appsrv-provider-test
 	mvn clean install
 </pre>
 
-Once build finsihed successfully, navigate to ofsconn-appsrv-provider-test/target and deploy the ofsconn-war.war into JBOSS_HOME/server/R12GA/deploy directory and access the following URL on your browser;
+Once build finsihed successfully, navigate to ofsconn-appsrv-provider-test/target and deploy the ofsconn.war into JBOSS_HOME/server/R12GA/deploy directory and access the following URL on your browser;
 <pre>
-	http://localhost:8080/ofsconn/foo?firstname=Me&lastname=Too
+	http://localhost:9090/ofsconn/foo?ofsRequest=ENQUIRY.SELECT,,INPUTT/123456,CURRENCY-LIST
 </pre>
 
 ## cf-wsjavaclient (NOT YET USED)

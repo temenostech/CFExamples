@@ -3,7 +3,6 @@ package com.sandbox.tafjeemix.war;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -25,11 +24,10 @@ public class FooServlet extends HttpServlet {
 	public void init()
 			throws javax.servlet.ServletException {
 		// We will instantiate our Spring context here	
-		ServletContext context = getServletContext();
 		try {
-			OFSConnectorServiceSpringContext.loadServiceContext(context.getClass().getClassLoader());
+			OFSConnectorServiceSpringContext.loadServiceContext(this.getClass().getClassLoader());
 		} catch (Exception e) {
-			throw new ServletException("Failed to spring context, see logs for error");
+			throw new ServletException("Failed to load spring context, see logs for error");
 		}
 	}
 	
@@ -60,9 +58,9 @@ public class FooServlet extends HttpServlet {
 			OFSConnResponse ofsResponse = new OFSConnResponse();
 			ResponseDetails serviceResponse = new ResponseDetails();
 			service.processOFSSimple(ofsRequest, ofsResponse, serviceResponse);
-			out.println("<h1>OFSConnector.processOFSSimple returned: " +
-					"Response : " + ofsResponse.getOfsResponse() + "<br />" +
-					serviceResponse + "</h1>");
+			out.println("<h1>Calling OFSConnector.processOFSSimple</h1><br /><h2>" +
+					"Response : " + ofsResponse.getOfsResponse() + "</h2><br /><h2>" +
+					serviceResponse + "</h2>");
 		}
 		out.println("</body>");
 		out.println("</html>");

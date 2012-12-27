@@ -57,7 +57,7 @@ public class FooServlet extends HttpServlet {
 			}
 			OFSConnResponse ofsResponse = new OFSConnResponse();
 			ResponseDetails serviceResponse = new ResponseDetails();
-			service.processOFSSimple(ofsRequest, ofsResponse, serviceResponse);
+			service.processOFS(ofsRequest, ofsResponse, serviceResponse);
 			out.println("<h1>Calling OFSConnector.processOFSSimple</h1><br /><h2>" +
 					"Response : " + ofsResponse.getOfsResponse() + "</h2><br /><h2>" +
 					serviceResponse + "</h2>");

@@ -3,11 +3,11 @@ package com.temenos.services.ofsconnector.tafj.standalone;
 import com.temenos.soa.services.UserContextCallBack;
 import com.temenos.soa.services.data.ResponseDetails;
 import com.temenos.soa.services.tafj.TAFJDefaultServiceHandlerImpl;
-import com.temenos.soa.services.tafj.TAFJServiceCallBack;
 import com.temenos.tafj.api.TAFJRuntimeImpl;
 
 /**
- * Extend the Default Handler but we need to initialise TAFJ with properties, so we didn't implement initialise method
+ * Extend the Default Handler to by pass the T24 security for now
+ * We can use rest of the handler functionalities i.e. TAFJ initialise, finalise etc
  * @author sjunejo
  *
  */
@@ -15,35 +15,14 @@ import com.temenos.tafj.api.TAFJRuntimeImpl;
 
 public class MockServiceHandler extends TAFJDefaultServiceHandlerImpl {
 
+	@Override
 	public void clearUserContext(TAFJRuntimeImpl arg0, ResponseDetails arg1) {
-		// TODO Auto-generated method stub
-		
+		// Do nothing and just return
 	}
 
-	public boolean finalise(TAFJRuntimeImpl arg0) {
-		// TODO Auto-generated method stub
-		return true;
-	}
-
+	@Override
 	public void loadUserContext(TAFJRuntimeImpl arg0, UserContextCallBack arg1,
 			ResponseDetails arg2) {
-		// TODO Auto-generated method stub
-		
+		// Let it go
 	}
-
-	public void registerServiceCallBack(TAFJServiceCallBack arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void unregisterAllServiceCallback() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void unregisterServiceCallBack(TAFJServiceCallBack arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
 }

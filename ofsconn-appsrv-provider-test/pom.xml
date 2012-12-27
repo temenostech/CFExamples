@@ -21,7 +21,7 @@
 
     <dependency>
     	<groupId>com.temenos</groupId>
-    	<artifactId>ofsconnector-provider</artifactId>
+    	<artifactId>eb_ofsconnector-provider-tafj</artifactId>
     	<version>dev</version>
     </dependency>
     <dependency>
@@ -32,7 +32,7 @@
     </dependency>
     <dependency>
     	<groupId>com.temenos</groupId>
-    	<artifactId>ofsconnector-data</artifactId>
+    	<artifactId>eb_ofsconnector-data</artifactId>
     	<version>dev</version>
     	<scope>provided</scope>
     </dependency>

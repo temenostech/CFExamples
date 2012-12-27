@@ -56,17 +56,12 @@
 	<!-- Component Dependencies -->
   	<dependency>
   		<groupId>com.temenos</groupId>
-  		<artifactId>ofsconnector-provider</artifactId>
+  		<artifactId>eb_ofsconnector-provider-tafj</artifactId>
   		<version>dev</version>
   	</dependency>
   	<dependency>
   		<groupId>com.temenos</groupId>
-  		<artifactId>ofsconnector-data</artifactId>
-  		<version>dev</version>
-  	</dependency>
-  	<dependency>
-  		<groupId>com.temenos</groupId>
-  		<artifactId>ofsconnector</artifactId>
+  		<artifactId>eb_ofsconnector-data</artifactId>
   		<version>dev</version>
   	</dependency>
   	<!-- Test dependencies -->
@@ -74,7 +69,6 @@
 		<groupId>junit</groupId>
 		<artifactId>junit</artifactId>
 		<version>4.8.2</version>
-		<scope>test</scope>
 	</dependency>
 	<dependency>
 		<groupId>log4j</groupId>
@@ -113,5 +107,10 @@
 	<artifactId>commons-pool</artifactId>
 	<version>1.5.5</version>
    </dependency>
+     <dependency>
+     	<groupId>com.temenos</groupId>
+     	<artifactId>eb_ofsconnector</artifactId>
+     	<version>dev</version>
+     </dependency>
   </dependencies>
 </project>

@@ -20,8 +20,8 @@
 	<classpathentry kind="var" path="M2_REPO/javax/servlet/servlet-api/2.5/servlet-api-2.5.jar"/>
 	<classpathentry kind="var" path="M2_REPO/javax/javaee-api/6.0/javaee-api-6.0.jar"/>
 	<classpathentry kind="var" path="M2_REPO/com/temenos/component-framework/dev/component-framework-dev.jar"/>
-	<classpathentry kind="var" path="M2_REPO/com/temenos/ofsconnector-provider/dev/ofsconnector-provider-dev.jar"/>
-	<classpathentry kind="var" path="M2_REPO/com/temenos/ofsconnector-data/dev/ofsconnector-data-dev.jar"/>
+	<classpathentry kind="var" path="M2_REPO/com/temenos/eb_ofsconnector-provider-tafj/dev/eb_ofsconnector-provider-tafj-dev.jar"/>
+	<classpathentry kind="var" path="M2_REPO/com/temenos/eb_ofsconnector-data/dev/eb_ofsconnector-data-dev.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/springframework/spring-aop/2.5.6/spring-aop-2.5.6.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/springframework/spring-beans/2.5.6/spring-beans-2.5.6.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/springframework/spring-core/2.5.6/spring-core-2.5.6.jar"/>

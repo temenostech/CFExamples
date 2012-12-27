@@ -53,6 +53,7 @@
 	<property name="src.cpp.API.dir" value="${src.t24service.dir}${file.separator}cppAPI" />
 	<property name="src.dot.net.API.dir" value="${src.t24service.dir}${file.separator}dotnetAPI" />
 	<property name="src.java.API.dir" value="${src.t24service.dir}${file.separator}javaAPI" />
+	<property name="src.t24service.ejb.dir" value="${src.generated.dir}${file.separator}ejb" />
 
 	<property name="build.t24service.dir" value="${build.dir}${file.separator}t24service" />
 	<property name="build.t24service.java.dir" value="${build.t24service.dir}${file.separator}java" />
@@ -63,11 +64,15 @@
 	<property name="build.t24service.dot.net.dir" value="${build.t24service.dir}${file.separator}dotnet" />
 	<property name="build.t24service.dot.net.extlib.dir" value="${build.ext.lib.dir}${file.separator}dotnet" />
 	<property name="build.t24service.ext.comp.dir" value="${build.ext.lib.dir}${file.separator}comps" />
+	<property name="build.t24service.ejb.dir" value="${build.dir}${file.separator}ejb" />
+	<property name="build.t24service.ejb.tafc.dir" value="${build.t24service.ejb.dir}${file.separator}tafc" />
+	<property name="build.t24service.ejb.tafj.dir" value="${build.t24service.ejb.dir}${file.separator}tafj" />
 	
 	<property name="dist.t24service.dir" value="${dist.lib.dir}${file.separator}t24service" />
 	<property name="dist.t24service.cpp.dir" value="${dist.t24service.dir}${file.separator}cpp" />
 	<property name="dist.t24service.dot.net.dir" value="${dist.t24service.dir}${file.separator}dotnet" />
 	<property name="dist.t24service.java.dir" value="${dist.t24service.dir}${file.separator}java" />
+	<property name="dist.t24service.ejb.dir" value="${dist.lib.dir}${file.separator}ejb" />
 
 	<!--t24 data source, build and dist directory structure-->
 	<property name="src.data.dir" value="${src.generated.dir}${file.separator}data" />
@@ -595,6 +600,8 @@
 		<mkdir dir="${build.t24service.java.generated.src.dir}" />
 		<delete dir="${build.t24service.java.class.dir}" />
 		<mkdir dir="${build.t24service.java.class.dir}" />
+		<delete dir="${build.t24service.ejb.dir}" />
+		<mkdir dir="${build.t24service.ejb.dir}" />
 		<delete dir="${build.t24service.cpp.dir}" />
 		<mkdir dir="${build.t24service.cpp.dir}" />
 		<delete dir="${build.t24service.dot.net.dir}" />
@@ -683,6 +690,7 @@
 					<target name="compile-proxy-adaptor-for-tafj" />
 					<target name="compile-java-ws" />
 					<target name="generate-java-ws-wsdl" />
+					<target name="compile-t24service-ejb" />
 				</ant>
 			</then>
 		</if>
@@ -1469,6 +1477,25 @@
 		<property name="wsdl.generated" value="${wsdl.generator.check}" />
 	</target>
 
+	<!-- Compile T24 EJB -->
+	<target name="compile-t24service-ejb" unless="t24service.ejb.compiled" depends="compile-t24service-for-tafj, compile-java-ws"
+		description="This target will build the service EJB classes">
+		<echo message="compiling EJB Wrappers for T24 service, ${service.name}" />
+		<path id="ejb.classpath">
+			<!-- Java Service Directory-->
+			<dirset dir="${build.t24service.java.class.dir}" />
+			<!-- Java WS Build Directory -->
+			<dirset dir="${build.ws.java.dir}" />
+			<!-- Full compile classpath for data and rest of other classes -->
+			<path refid="compile.classpath" />
+		</path>
+		<javac debug="true" debuglevel="${debuglevel}" destdir="${build.t24service.ejb.dir}" includeantruntime="false">
+			<src path="${src.t24service.ejb.dir}" />
+			<classpath refid="ejb.classpath" />
+		</javac>
+		<property name="t24service.ejb.compiled" value="true" />
+	</target>
+	
 	<!-- ====================================================== -->
 	<!-- test T24 service component -->
 	<!-- ====================================================== -->
@@ -2297,6 +2324,7 @@
 				<ant inheritrefs="true">
 					<target name="dist-tafj-artifact" />
 					<target name="dist-java-ws" />
+					<target name="dist-ejb" />
 				</ant>
 			</then>
 		</if>
@@ -2516,6 +2544,81 @@
 		</copy>
 	</target>
 	
+	<target name="dist-ejb" unless="t24service.ejb.distributed" depends="compile-t24service-ejb">
+		<echo message="dist EJB Wrapper for T24 service, ${service.name}" />
+		<!-- Package the TAFJ ejb, first get everything in one place -->
+		<mkdir dir="${build.t24service.ejb.tafj.dir}${file.separator}META-INF" />
+		<copy todir="${build.t24service.ejb.tafj.dir}" overwrite="true">
+			<fileset dir="${build.t24service.ejb.dir}" 
+				includes="com${file.separator}**" 
+				excludes="**${file.separator}*BeanTAFC.class" />
+		</copy>
+		<copy todir="${build.t24service.ejb.tafj.dir}${file.separator}META-INF" overwrite="true">
+			<fileset dir="${src.t24service.ejb.dir}${file.separator}META-INF${file.separator}tafj" includes="*" />
+		</copy>
+		<jar destfile="${dist.t24service.ejb.dir}${file.separator}tafj${file.separator}t24-${service.name}-ejb.jar">
+			<manifest>
+				<attribute name="Ant-Version" value="${ant.version}" />
+				<attribute name="Created-By" value="${java.specification.version}(${java.specification.vendor})" />
+				<attribute name="Implementation-Title" value="TAFJ EJB Wrapper of ${service.name}" />
+				<attribute name="Implementation-Major-Version" value="${major.project.version}" />
+				<attribute name="Implementation-Minor-Version" value="${minor.project.version}" />
+				<attribute name="Implementation-Vendor" value="TEMENOS" />
+				<attribute name="Class-Path" value="." />
+			</manifest>
+			<fileset dir="${build.t24service.ejb.tafj.dir}" includes="**/**" />
+		</jar>
+
+		<!-- Package the TAFC ejb as an ear, first get everything in one place -->
+		<!-- Create an EJB JAR -->
+		<jar destfile="${build.t24service.ejb.tafc.dir}${file.separator}t24-${service.name}-ejb.jar">
+			<manifest>
+				<attribute name="Ant-Version" value="${ant.version}" />
+				<attribute name="Created-By" value="${java.specification.version}(${java.specification.vendor})" />
+				<attribute name="Implementation-Title" value="TAFC EJB Wrapper of ${service.name}" />
+				<attribute name="Implementation-Major-Version" value="${major.project.version}" />
+				<attribute name="Implementation-Minor-Version" value="${minor.project.version}" />
+				<attribute name="Implementation-Vendor" value="TEMENOS" />
+				<attribute name="Class-Path" value="." />
+			</manifest>
+			<metainf dir="${src.t24service.ejb.dir}${file.separator}META-INF${file.separator}tafc" includes="*" />
+			<fileset dir="${build.t24service.ejb.dir}" includes="com${file.separator}**" 
+							excludes="**${file.separator}*BeanTAFJ.class" />
+		</jar>
+		<!-- Copy the Dependencies for TAFC in ear lib -->
+		<mkdir dir="${build.t24service.ejb.tafc.dir}${file.separator}lib" />
+		<copy todir="${build.t24service.ejb.tafc.dir}${file.separator}lib">
+			<fileset file="${tafj.ext.dir}${file.separator}tComponentFramework.jar" />
+			<fileset file="${dist.data.java.dir}${file.separator}*.jar" />
+			<fileset file="${dist.ws.java.dir}${file.separator}*-provider.jar" />
+		</copy>
+		<!-- prepare an application.xml -->
+		<mkdir dir="${build.t24service.ejb.tafc.dir}${file.separator}META-INF" />
+		<echo file="${build.t24service.ejb.tafc.dir}${file.separator}META-INF${file.separator}application.xml">&lt;?xml version="1.0" encoding="ASCII"?&gt;
+&lt;application xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:application="http://java.sun.com/xml/ns/javaee/application_5.xsd" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/application_5.xsd" version="5"&gt;
+	&lt;display-name&gt;${service.name}_EAR&lt;/display-name&gt;
+  	&lt;module&gt;
+    	&lt;ejb&gt;t24-${service.name}-ejb.jar&lt;/ejb&gt;
+  	&lt;/module&gt;
+  	&lt;library-directory&gt;lib&lt;/library-directory&gt;  
+&lt;/application&gt;
+		</echo>
+		<!-- Package an EAR -->
+		<jar destfile="${dist.t24service.ejb.dir}${file.separator}tafc${file.separator}t24-${service.name}.ear">
+			<manifest>
+				<attribute name="Ant-Version" value="${ant.version}" />
+				<attribute name="Created-By" value="${java.specification.version}(${java.specification.vendor})" />
+				<attribute name="Implementation-Title" value="TAFC ${service.name} EAR Wrapper with depencies" />
+				<attribute name="Implementation-Major-Version" value="${major.project.version}" />
+				<attribute name="Implementation-Minor-Version" value="${minor.project.version}" />
+				<attribute name="Implementation-Vendor" value="TEMENOS" />
+			</manifest>
+			<fileset dir="${build.t24service.ejb.tafc.dir}" includes="**/**" />
+		</jar>
+		
+		<property name="t24service.ejb.distributed" value="true" />
+	</target>
+	
 	<!-- =================================================================== -->
 	<!-- Distribute release artifacts to common directory                    -->
 	<!-- =================================================================== -->
@@ -2535,15 +2638,20 @@
 		<!-- Zip the common artifacts for all platforms i.e. Includes, Inserts and Java Artifacts -->
 		<zip destfile="${publish.dir}${file.separator}${service.name}.zip" >
 		    <fileset dir="${dist.dir}" 
-		    	includes="Data/**, include/**, JBCInsert/**, lib/**/java/**" />
+		    	includes="Data/**, include/**, JBCInsert/**, lib/**/java/**, lib/ejb/**" />
 		</zip>
 		<!-- Now zip the platform dependent artefacts i.e. C++ and .NET (if avaialble) -->
-		<delete dir="${publish.dir}${file.separator}${platform}" />
-		<mkdir dir="${publish.dir}${file.separator}${platform}" />
-		<zip destfile="${publish.dir}${file.separator}${platform}${file.separator}${service.name}.zip" >
-		    <fileset dir="${dist.dir}" 
-		    	excludes="Data/**, include/**, JBCInsert/**, lib/**/java/**" />
-		</zip>
+		<if>
+			<isset property="env.TAFC_HOME" />
+			<then>
+				<delete dir="${publish.dir}${file.separator}${platform}" />
+				<mkdir dir="${publish.dir}${file.separator}${platform}" />
+				<zip destfile="${publish.dir}${file.separator}${platform}${file.separator}${service.name}.zip" >
+				    <fileset dir="${dist.dir}" 
+				    	excludes="Data/**, include/**, JBCInsert/**, lib/**/java/**, lib/ejb/**" />
+				</zip>
+			</then>
+		</if>
 	</target>
 	
 	<!-- ================================================================== -->

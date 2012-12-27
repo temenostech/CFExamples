@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<bean id="OFSConnectorServiceProvider" class="com.temenos.services.ofsconnector.tafj.OFSConnectorServiceProviderImplTAFJ" />
+	<bean id="OFSConnectorServiceImpl" class="com.temenos.services.ofsconnector.OFSConnectorServiceImpl" singleton="false">
+		<constructor-arg type="com.temenos.soa.services.RuntimeProperties" ref="RuntimeProperties" />
+	</bean>
+	<bean id="RuntimeProperties" class="com.temenos.soa.services.RuntimeProperties">
+		<constructor-arg>
+			<map>
+				<entry key="OFS_SOURCE" value="GCS"/>
+			</map>
+		</constructor-arg>
+	</bean>
+	<bean id="OFSConnectorServiceAPIPool" class="org.springframework.aop.target.CommonsPoolTargetSource">
+	  <property name="targetBeanName" value="OFSConnectorServiceImpl" />
+	  <property name="maxSize" value="3" />
+	  <property name="maxWait" value="60000" />
+	</bean>	
+	
+	<!-- More Custom Bean configurations can go here -->
+</beans>

@@ -161,15 +161,7 @@ This project creates the Java clients for a web service by invoking the 'JAVA_HO
 ### Build and run the cf-wsjavaclient
 <pre>
 	$ cd PROJECT_HOME/cf-wsjavaclient
-	$ mvn clean install [-DwsdlLoc=<URL_Of_WebService_WSDL>]
-</pre>
-
-Above will generate the client classes and compile it for us to be used
-
-### To run the test against the service simply apply following commands;
-<pre>
-	$ cd PROJECT_HOME/cf-wsjavaclient
-	$ mvn -DskipTests=false clean verify
+	$ mvn clean install
 </pre>
 
 ### Obselete Contents 

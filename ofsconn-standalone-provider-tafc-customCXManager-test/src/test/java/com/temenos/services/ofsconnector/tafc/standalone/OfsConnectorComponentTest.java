@@ -16,9 +16,6 @@ import com.temenos.soa.services.UserContextCallBack;
 import com.temenos.soa.services.data.ResponseDetails;
 import com.temenos.soa.services.data.SSOUserDetails;
 import com.temenos.soa.services.data.T24UserDetails;
-import com.temenos.soa.services.tafc.JCAHelper;
-import com.temenos.soa.services.tafc.TAFCDefaultServiceHandlerImpl;
-import com.temenos.soa.services.tafc.TAFCServiceHandler;
 
 /**
  * Test methods to explain how to invoke the OFSConnector jBC Impl using Component provider APIs
@@ -27,17 +24,11 @@ import com.temenos.soa.services.tafc.TAFCServiceHandler;
  */
 public class OfsConnectorComponentTest {
 
-	JCAHelper customJCAHelper =  new CustomJCAHelper();
 	OFSConnectorServiceProviderAPI service = null;
 	
 	@Before
 	public void setUp() {
-		// Here we will override the JCA Helper, Component API will try to retreive from ServiceHandler
-		TAFCServiceHandler serviceHandler = new TAFCDefaultServiceHandlerImpl();
-		serviceHandler.setJCAHelper(customJCAHelper);
-		
-		// And now instantiate the Component Provider API, this all can also be done in Spring but not now
-		service = new OFSConnectorServiceProviderImplTAFC(serviceHandler);
+		service = new OFSConnectorServiceProviderImplTAFC(new CustomJCAHelper());
 	}
 	
 	@Test

@@ -1,5 +1,8 @@
 package com.temenos.services.ofsconnector.tafj.standalone;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -54,7 +57,7 @@ public class OfsConnectorComponentWithMockHandlerTest {
 		System.out.println(serviceResponse);
 		
 		// verify - currently failing, needs to fix by TAFJ team
-		//assertTrue(ofsResponse.getOfsResponse().startsWith("200003/MSG-ID-1/1"));
+		assertTrue(ofsResponse.getOfsResponse().startsWith("200003/MSG-ID-1/1"));
 	}
 
 	@Test
@@ -69,6 +72,6 @@ public class OfsConnectorComponentWithMockHandlerTest {
 		System.out.println(serviceResponse);
 		
 		// verify - currently failing, needs to fix by TAFJ team
-		//assertEquals("APPLICATION MISSING", ofsResponse.getOfsResponse());
+		assertEquals("APPLICATION MISSING", ofsResponse.getOfsResponse());
 	}
 }

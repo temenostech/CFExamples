@@ -2,15 +2,13 @@ package com.temenos.custom.cxmanager;
 
 import java.util.Properties;
 
-import javax.naming.NamingException;
-
 import com.jbase.jremote.DefaultJConnectionFactory;
 import com.jbase.jremote.JConnection;
 import com.jbase.jremote.JRemoteException;
 import com.temenos.soa.services.tafc.DefaultJCAHelper;
 
-public class CustomJCAHelper extends DefaultJCAHelper{
-
+public class CustomJCAHelper extends DefaultJCAHelper {
+	private static final long serialVersionUID = -3755932185807535721L;
 	private String _host = "localhost";
 	private int _port = 20002;
 	private String _ofsSource = "GCS";
@@ -30,7 +28,7 @@ public class CustomJCAHelper extends DefaultJCAHelper{
 	
 	// We just need to override the way we get Connection
 	@Override
-	public JConnection getConnection() throws JRemoteException, NamingException {
+	public JConnection getConnection() throws JRemoteException {
 		
 		DefaultJConnectionFactory jConnectionFactory = new DefaultJConnectionFactory();
         jConnectionFactory.setHost(_host);

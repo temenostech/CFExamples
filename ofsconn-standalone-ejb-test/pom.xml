@@ -44,7 +44,12 @@
 	</dependency>
 	<dependency>
 		<groupId>com.temenos</groupId>
-		<artifactId>eb_ofsconnector-ajb-tafj</artifactId>
+		<artifactId>eb_ofsconnector-ejb-tafj</artifactId>
+		<version>dev</version>
+	</dependency>
+	<dependency>
+		<groupId>com.temenos</groupId>
+		<artifactId>eb_ofsconnector-ejb-tafc</artifactId>
 		<version>dev</version>
 	</dependency>
   </dependencies>

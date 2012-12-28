@@ -44,7 +44,6 @@ public class OfsConnectorServiceClientTest {
 		objCommon = null;
 	}
 	
-	@SuppressWarnings("restriction")
 	@Test
 	public void testOfsConnectiorServiceClientSuccess() {
 		

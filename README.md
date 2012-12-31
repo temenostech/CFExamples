@@ -23,6 +23,40 @@ $TAFJ_MB_DIR/T24/Component/OFSConnector/lib directory;
 			5.2 t24-OFSConnectorService-jws.aar	--> Component Axis2 deployable web service archive, applicable for TAFC and TAFJ (internally uses Component Provider API to call jBC Impl)
 </pre>
 
+# jBoss Secutiry Config
+
+As few of the following samples will be using secure component api's, you will be required to configured jBoss for the same to provide the security domain, users etc. 
+Note: We will be using jboss default login modules to serve our need, but same can be achieved using industry standard LDAP server's, all you need to make sure that USER context and role is available.
+
+Lets define a new jBoss Secutiry domain by adding following xml in 'JBOSS_HOME/server/&lt;profile&gt;/conf/login-config.xml' file;
+<pre>
+	<!-- T24 Application Login Module -->
+	&lt;application-policy name="T24App"&gt;
+		&lt;authentication&gt;
+			&lt;login-module code="org.jboss.security.auth.spi.UsersRolesLoginModule" flag="required"&gt;
+				&lt;module-option name="usersProperties"&gt;props/jbossws-users.properties&lt;/module-option&gt;
+				&lt;module-option name="rolesProperties"&gt;props/jbossws-roles.properties&lt;/module-option&gt;
+				&lt;module-option name="unauthenticatedIdentity"&gt;anonymous&lt;/module-option&gt;
+			&lt;/login-module&gt;
+		&lt;/authentication&gt;
+	&lt;/application-policy&gt;
+</pre>
+
+Above configurations defines a new security domain in jboss as 'T24App' with user configuration file located at './props/jbossws-users.properties' and user rols configuration file located at './props/jbossws-roles.properties'
+
+Now add a new user in jboss as 'SSOUSER' with password '123456' by adding following line in 'JBOSS_HOME/server/&lt;profile&gt;/conf/props/jbossws-users.properties';
+<pre>
+	SSOUSER=123456
+</pre>
+
+And define a role for the above user SSOUSER as 't24user' by adding the following line in 'JBOSS_HOME/server/&lt;profile&gt;/conf/props/jbossws-roles.properties';
+<pre>
+	SSOUSER=t24user
+</pre>
+
+NOTE: As you can see we have defined a jBoss user called SSOUSER, once authenticated 'SSOUSER' will be our PRINCIPAL and T24 needs to load the context for this user to execute the request. For that we need to define user
+profile within T24 as SIGN.ON.NAME = SSOUSER (password can be antyhing for this user as it will be ignored during JF.VALIDATE.SIGN.ON) and one of the ATTRIBUTES of this user profile must be set to 'PREAUTHENTICATED'.
+
 # TAFJ Samples
 
 ## Installing TAFJ Dependencies and Starting TAFJ DB
@@ -101,7 +135,7 @@ Note: Make sure component service is deployed within TAFJ environment
 	mvn clean install
 </pre>
 
-Once build finsihed successfully, navigate to ofsconn-appsrv-provider-test/target and deploy the ofsconn.war into JBOSS_HOME/server/<profile>/deploy directory and access the following URL on your browser;
+Once build finsihed successfully, navigate to ofsconn-appsrv-provider-test/target and deploy the ofsconn.war into JBOSS_HOME/server/&lt;profile&gt;/deploy directory and access the following URL on your browser;
 <pre>
 	http://localhost:9090/ofsconn/foo?ofsRequest=ENQUIRY.SELECT,,INPUTT/123456,CURRENCY-LIST
 </pre>
@@ -141,7 +175,7 @@ This sample will demonstrate how we can invoke jBC Impl using Component secure E
 			TestClass --> Component EJB API --> Component Provider API --> Component jBC Impl
 </pre>
 
-To deploy the component ejb service in jBoss, simply drop the 't24-OFSConnectorService-ejb.jar' for TAFJ and  't24-OFSConnectorService.ear' for TAFC present in '%OFSCONNECTOR_LIB%/ejb/[tafj/tafc]' directory into 'JBOSS_HOME/server/<profile>/deploy' directory.
+To deploy the component ejb service in jBoss, simply drop the 't24-OFSConnectorService-ejb.jar' for TAFJ and  't24-OFSConnectorService.ear' for TAFC present in '%OFSCONNECTOR_LIB%/ejb/[tafj/tafc]' directory into 'JBOSS_HOME/server/&lt;profile&gt;/deploy' directory.
 Note: By default service EJB are security enabled and expect 'T24App' security domain to be present at deployment. If its not created please create one beofore deploying the EJB service and define a user 'SSOUSER' with password '123456' and role as 't24user' within jboss for authentication. SSOUSER will be passed a SessionContext to and EJB which will be then used to set context within T24 before invoking the jBC Impl.
 
 ### To compile and run the test class 'OfsConnectorComponentTest' apply folliwng command;
@@ -150,7 +184,7 @@ Note: By default service EJB are security enabled and expect 'T24App' security d
 	$ mvn clean install
 </pre>
 
-## Sample 2. cf-wsjavaclient [For TAFC and TAFJ - NOT READY YET]
+## Sample 2. cf-wsjavaclient [For TAFC and TAFJ]
  
 This project creates the Java clients for a web service by invoking the 'JAVA_HOME/bin/wsimport' utility on a deployed webservice. To generate first we need to deploy the Web Service in axis2. This can be done by copying the file './dist/release/OFSConnector/lib/ws/java/t24-OFSConnectorService-jws.aar' into 'JBOSS_HOME/server/R12GA/deploy/axis2.war/WEB-INF/services' directory, one the deployment is finished you can verify your new web service on folllowing link by accessing its WSDL;
 <pre>
@@ -163,3 +197,24 @@ This project creates the Java clients for a web service by invoking the 'JAVA_HO
 	$ cd PROJECT_HOME/cf-wsjavaclient
 	$ mvn clean install
 </pre>
+
+## Sample 3. ofsconn-appserv-ejb-test [For TAFC and TAFJ]
+
+This sample demonstrate how we can invoke component jBC Impl from a web application deployed in an JavaEE Application Server via Component EJB API. The instructions here are to test with TAFC system, but same logic can be applied to TAFJ by updating the JNDI name to lookup. This example will also demostrate how we can pass the Web Secutiry Context from Web Container to an EJB container as all our Component EJB by default secutiry enabled.
+the web archive is also configured to be secured and using a 'T24App' as a security domain. Please make sure you have this secutiry doamin available in your jBoss area with user profile as 'SSOUSER=123456' and user role
+'SSOUSER=t24user'.
+Note: Make sure you have started the tafc_agent on T24 Application server
+
+### To build the example war apply following command;
+<pre>
+	$ cd PROJECT_HOME/ofsconn-appserv-ejb-test
+	$ mvn clean install
+</pre>
+
+Once the build is finished, yoiu will get XXXX.war under ofsconn-appserv-ejb-test/target directory, simply copy this file under 'JBOSS_HOME/server/&lt;profile&gt;/deploy' directory and access the following URL;
+<pre>
+	http://localhost:9090/ofsconn-ejb/foo?ofsRequest=ENQUIRY.SELECT,,INPUTT/123456,CURRENCY-LIST
+</pre>
+
+As soon as you will try to access the above URL, application server will challenge you to provide a user name and password. Provide a jboss user you have defined earlier as 'SSOUSER=123456', once authenticated 'SSOUSER' will be
+the user context for that session and will be received by the web application, which then internally pass that context to component EJB as Signle Sign On, which internally call T24 with the same context.

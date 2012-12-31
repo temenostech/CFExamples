@@ -5,6 +5,7 @@
 /ofsconn-standalone-provider-tafc-test/target
 /ofsconn-standalone-provider-test/target
 /ofsconn-standalone-test/target
+/ofsconn-appserv-ejb-test/target
 velocity.log*
 build
 dist

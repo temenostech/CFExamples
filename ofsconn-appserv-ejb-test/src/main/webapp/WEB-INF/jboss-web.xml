@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jboss-web>
+    <security-domain>java:/jaas/T24App</security-domain>
+    <ejb-ref>
+        <ejb-ref-name>ejb/OFSConnectorServiceBeanRemote</ejb-ref-name>
+        <jndi-name>t24-OFSConnectorService/OFSConnectorServiceBeanTAFC/remote</jndi-name>
+    </ejb-ref>
+</jboss-web>

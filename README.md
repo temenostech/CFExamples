@@ -23,7 +23,7 @@ $TAFJ_MB_DIR/T24/Component/OFSConnector/lib directory;
 			5.2 t24-OFSConnectorService-jws.aar	--> Component Axis2 deployable web service archive, applicable for TAFC and TAFJ (internally uses Component Provider API to call jBC Impl)
 </pre>
 
-# jBoss Secutiry Config
+# jBoss Security Config
 
 As few of the following samples will be using secure component api's, you will be required to configured jBoss for the same to provide the security domain, users etc. 
 Note: We will be using jboss default login modules to serve our need, but same can be achieved using industry standard LDAP server's, all you need to make sure that USER context and role is available.

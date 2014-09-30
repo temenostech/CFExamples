@@ -1,0 +1,113 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.temenos</groupId>
+  <artifactId>ofsconn-standalone-proxy-tafj-test</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <build>
+    <sourceDirectory>src</sourceDirectory>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>2.3.2</version>
+        <configuration>
+          <source>1.6</source>
+          <target>1.6</target>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  <dependencies>
+  	
+  	<!-- TAFJ compile and runtime dependencies -->
+	<dependency>
+		<groupId>com.temenos.tafj</groupId>
+		<artifactId>TAFJCore</artifactId>
+		<version>14.0.9</version>
+	</dependency>
+	<dependency>
+		<groupId>com.temenos.tafj</groupId>
+		<artifactId>TAFJLocking</artifactId>
+		<version>14.0.9</version>
+		<scope>runtime</scope>
+	</dependency>
+	<dependency>
+		<groupId>com.temenos.tafj</groupId>
+		<artifactId>TAFJClient</artifactId>
+		<version>14.0.9</version>
+		<scope>runtime</scope>
+	</dependency>
+  	
+  	<!-- Component framework dependencies -->
+	<dependency>
+		<groupId>com.temenos.technology.soaframework</groupId>
+		<artifactId>tComponentFramework</artifactId>
+		<version>15.0.0-SNAPSHOT</version>
+	</dependency>
+	<dependency>
+		<groupId>com.temenos</groupId>
+		<artifactId>jremote</artifactId>
+		<version>201404.0.0.0</version>
+	</dependency>
+	<!-- Component Dependencies -->
+  	<dependency>
+  		<groupId>com.temenos.t24.cfservice.ofsconnector.tafj</groupId>
+  		<artifactId>t24-OFSConnectorService</artifactId>
+  		<version>14.0.0-SNAPSHOT</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>com.temenos.t24.cfservice.ofsconnector.ws</groupId>
+  		<artifactId>t24-OFSConnectorService-tafj-provider</artifactId>
+  		<version>14.0.0-SNAPSHOT</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>com.temenos.t24.cfservice.ofsconnector.data</groupId>
+  		<artifactId>t24-OFSConnectorService-Data</artifactId>
+  		<version>14.0.0-SNAPSHOT</version>
+  	</dependency>
+  	<!-- OFSConnector Proxy Adapter -->
+  	<dependency>
+  		<groupId>com.temenos.t24.cfservice.ofsconnector.proxy.tafj</groupId>
+  		<artifactId>t24-OFSConnectorService-ProxyAdaptor</artifactId>
+  		<version>14.0.0-SNAPSHOT</version>
+  	</dependency>
+  
+  	<!-- Test dependencies -->
+	<dependency>
+		<groupId>junit</groupId>
+		<artifactId>junit</artifactId>
+		<version>4.8.2</version>
+	</dependency>
+	<dependency>
+		<groupId>log4j</groupId>
+		<artifactId>log4j</artifactId>
+		<version>1.2.14</version>
+		<scope>runtime</scope>
+	</dependency>
+	
+	<dependency>
+	<groupId>org.springframework</groupId>
+	<artifactId>spring-core</artifactId>
+	<version>2.5.6</version>
+    </dependency>
+    <dependency>
+	<groupId>org.springframework</groupId>
+	<artifactId>spring-beans</artifactId>
+	<version>2.5.6</version>
+    </dependency>
+    <dependency>
+	<groupId>org.springframework</groupId>
+	<artifactId>spring-context</artifactId>
+	<version>2.5.6</version>
+    </dependency>
+     <dependency>
+	<groupId>org.springframework</groupId>
+	<artifactId>spring-aop</artifactId>
+	<version>2.5.6</version>
+    </dependency>
+     <dependency>
+	<groupId>commons-pool</groupId>
+	<artifactId>commons-pool</artifactId>
+	<version>1.5.5</version>
+   </dependency>
+  </dependencies>
+</project>

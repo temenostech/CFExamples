@@ -1,9 +1,9 @@
-package com.temenos.services.ofsconnector.tafj.standalone;
+package com.temenos.t24.cfservice.client.example.tafj.standalone;
 
 import com.temenos.soa.services.UserContextCallBack;
 import com.temenos.soa.services.data.ResponseDetails;
 import com.temenos.soa.services.tafj.TAFJDefaultServiceHandlerImpl;
-import com.temenos.tafj.api.TAFJRuntimeImpl;
+import com.temenos.tafj.api.client.TAFJRuntime;
 
 /**
  * Extend the Default Handler to by pass the T24 security for now
@@ -16,12 +16,12 @@ import com.temenos.tafj.api.TAFJRuntimeImpl;
 public class MockServiceHandler extends TAFJDefaultServiceHandlerImpl {
 
 	@Override
-	public void clearUserContext(TAFJRuntimeImpl arg0, ResponseDetails arg1) {
+	public void clearUserContext(TAFJRuntime arg0, ResponseDetails arg1) {
 		// Do nothing and just return
 	}
 
 	@Override
-	public void loadUserContext(TAFJRuntimeImpl arg0, UserContextCallBack arg1,
+	public void loadUserContext(TAFJRuntime arg0, UserContextCallBack arg1,
 			ResponseDetails arg2) {
 		// Let it go
 	}

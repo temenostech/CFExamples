@@ -6,12 +6,6 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="src" output="target/test-classes" path="src/test/java">
-		<attributes>
-			<attribute name="optional" value="true"/>
-			<attribute name="maven.pomderived" value="true"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
 		<attributes>
 			<attribute name="maven.pomderived" value="true"/>
@@ -19,13 +13,13 @@
 	</classpathentry>
 	<classpathentry kind="var" path="M2_REPO/javax/servlet/servlet-api/2.5/servlet-api-2.5.jar"/>
 	<classpathentry kind="var" path="M2_REPO/javax/javaee-api/6.0/javaee-api-6.0.jar"/>
-	<classpathentry kind="var" path="M2_REPO/com/temenos/component-framework/dev/component-framework-dev.jar"/>
-	<classpathentry kind="var" path="M2_REPO/com/temenos/eb_ofsconnector-provider-tafj/dev/eb_ofsconnector-provider-tafj-dev.jar"/>
-	<classpathentry kind="var" path="M2_REPO/com/temenos/eb_ofsconnector-data/dev/eb_ofsconnector-data-dev.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/springframework/spring-aop/2.5.6/spring-aop-2.5.6.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/springframework/spring-beans/2.5.6/spring-beans-2.5.6.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/springframework/spring-core/2.5.6/spring-core-2.5.6.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/springframework/spring-context/2.5.6/spring-context-2.5.6.jar"/>
 	<classpathentry kind="var" path="M2_REPO/commons-pool/commons-pool/1.5.5/commons-pool-1.5.5.jar"/>
+	<classpathentry kind="var" path="M2_REPO/com/temenos/t24/cfservice/ofsconnector/ws/t24-OFSConnectorService-tafj-provider/14.0.0-SNAPSHOT/t24-OFSConnectorService-tafj-provider-14.0.0-SNAPSHOT.jar"/>
+	<classpathentry kind="var" path="M2_REPO/com/temenos/t24/cfservice/ofsconnector/data/t24-OFSConnectorService-Data/14.0.0-SNAPSHOT/t24-OFSConnectorService-Data-14.0.0-SNAPSHOT.jar"/>
+	<classpathentry kind="var" path="M2_REPO/com/temenos/technology/soaframework/tComponentFramework/14.0.0-SNAPSHOT/tComponentFramework-14.0.0-SNAPSHOT.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

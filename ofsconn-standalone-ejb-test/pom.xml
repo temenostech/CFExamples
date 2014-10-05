@@ -1,56 +1,35 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>com.temenos</groupId>
-  <artifactId>ofsconn-standalone-ejb-test</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
-  <build>
-    <sourceDirectory>src</sourceDirectory>
-    <plugins>
-      <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>2.3.2</version>
-        <configuration>
-          <source>1.6</source>
-          <target>1.6</target>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
-  <dependencies>
-  	<!-- jBoss Client JAR -->
-  	<dependency>
-    		<groupId>com.jboss</groupId>
-    		<artifactId>client-all</artifactId>
-    		<version>4.2.3</version>
-    		<scope>system</scope>
-    		<systemPath>${basedir}\lib\jbossall-client.jar</systemPath>
-    	</dependency>
-  	<!-- Component and framework dependencies -->
-	<dependency>
-		<groupId>com.temenos</groupId>
-		<artifactId>component-framework</artifactId>
-		<version>dev</version>
-	</dependency>
-	<dependency>
-  		<groupId>com.temenos</groupId>
-  		<artifactId>eb_ofsconnector-data</artifactId>
-  		<version>dev</version>
-  	</dependency>
-  	<!-- Test dependencies -->
-	<dependency>
-		<groupId>junit</groupId>
-		<artifactId>junit</artifactId>
-		<version>4.8.2</version>
-	</dependency>
-	<dependency>
-		<groupId>com.temenos</groupId>
-		<artifactId>eb_ofsconnector-ejb-tafj</artifactId>
-		<version>dev</version>
-	</dependency>
-	<dependency>
-		<groupId>com.temenos</groupId>
-		<artifactId>eb_ofsconnector-ejb-tafc</artifactId>
-		<version>dev</version>
-	</dependency>
-  </dependencies>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.temenos.t24.cfservice.client.example</groupId>
+		<artifactId>cfclients-parent</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+
+	<artifactId>ofsconn-standalone-ejb-test</artifactId>
+
+	<dependencies>
+		<!-- jBoss Client JAR -->
+		<dependency>
+			<groupId>com.jboss</groupId>
+			<artifactId>client-all</artifactId>
+			<version>4.2.3</version>
+			<scope>system</scope>
+			<systemPath>${basedir}\lib\jbossall-client.jar</systemPath>
+		</dependency>
+		<!-- Component and framework dependencies -->
+		<dependency>
+			<groupId>com.temenos.t24.cfservice.ofsconnector.ejb.tafj</groupId>
+			<artifactId>t24-OFSConnectorService-ejb</artifactId>
+			<version>14.0.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.temenos.t24.cfservice.ofsconnector.ejb.tafc</groupId>
+			<artifactId>t24-OFSConnectorService</artifactId>
+			<version>14.0.0-SNAPSHOT</version>
+			<type>ear</type>
+		</dependency>
+	</dependencies>
 </project>

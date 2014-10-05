@@ -1,4 +1,4 @@
-package com.temenos.services.ofsconnector.tafj.standalone;
+package com.temenos.t24.cfservice.client.example.tafj.standalone.provider;
 
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 

@@ -1,4 +1,4 @@
-package com.temenos.services.ofsconnector.tafj.standalone;
+package com.temenos.t24.cfservice.client.example.tafj.standalone.provider;
 
 import org.junit.After;
 import org.junit.Before;
@@ -10,27 +10,32 @@ import com.temenos.services.ofsconnector.data.OFSConnResponse;
 import com.temenos.soa.services.T24UserContextCallBackImpl;
 import com.temenos.soa.services.data.ResponseDetails;
 import com.temenos.soa.services.data.T24UserDetails;
+import com.temenos.t24.cfservice.client.example.tafj.standalone.provider.CustomSpringContext;
 
 /**
- * This class will demonstrate how we can invoke jBC Impl within standalone TAFJ environment using Component Provider API.
- * Component Provider API is designed to pool Java API objects using Apache Commons Pool. This way user do not have to pool
- * or maintain Java API (TAFJRuntimeImpl) objects. By default each provider JAR has a default spring configurations to load
- * ProviderImpl (i.e. it can be TAFC or TAFJ, see oFSConnectorServiceContext.xml for details)
+ * This class will demonstrate how we can invoke jBC Impl within standalone TAFJ environment using Component Provider API
+ * by loading the spring context ourselves and passing the context to Component Provider API to use it instead of loading 
+ * its own context
  * @author sjunejo
  *
  */
-public class OfsConnectorComponentTest {
+public class OfsConnectorComponentWithCustomContextTest {
 
 	private OFSConnectorServiceProviderAPI service = null;
 	
 	@Before
 	public void setup() {
-		// Here we will be loading Java API from Spring to contorl the number of instances etc.
+		// Here we will be loading spring context in custom class and then set the context in component spring class
+		// for Java Provider API to call 
 		try
 		{
-			// We need to pass the class loader so that spring context can be search and loaded
-			OFSConnectorServiceSpringContext.loadServiceContext(this.getClass().getClassLoader());
-			// Once context is loaded successfully, we can get hold of the bean
+			// So lets instantiate our custom spring loader,
+			CustomSpringContext.loadContext();
+			
+			// Now set the context for provider
+			OFSConnectorServiceSpringContext.setContext(CustomSpringContext.getContext());
+			
+			// Once context is set successfully, we can get hold of the bean
 			service = (OFSConnectorServiceProviderAPI) OFSConnectorServiceSpringContext.getContext().getBean("OFSConnectorServiceProvider");
 			
 			// Setting up a user context to load/switch T24 context before the call

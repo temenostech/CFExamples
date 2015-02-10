@@ -1,12 +1,4 @@
-/cf-wsjavaclientDynamic/target
-/cf-wsjavaclient/target
-/ofsconn-appsrv-provider-test/target
-/ofsconn-standalone-ejb-test/target
-/ofsconn-standalone-provider-tafc-customCXManager-test/target
-/ofsconn-standalone-provider-tafc-test/target
-/ofsconn-standalone-provider-test/target
-/ofsconn-standalone-test/target
-/ofsconn-appserv-ejb-test/target
+target
 velocity.log*
 build
 dist

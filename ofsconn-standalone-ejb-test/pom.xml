@@ -17,7 +17,7 @@
 			<artifactId>client-all</artifactId>
 			<version>4.2.3</version>
 			<scope>system</scope>
-			<systemPath>${basedir}\lib\jbossall-client.jar</systemPath>
+			<systemPath>${basedir}/lib/jbossall-client.jar</systemPath>
 		</dependency>
 		<!-- Component and framework dependencies -->
 		<dependency>

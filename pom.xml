@@ -22,7 +22,6 @@
 		<module>ofsconn-standalone-test</module>
 	</modules>
 	<build>
-		<sourceDirectory>src</sourceDirectory>
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
